@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medida dos Tanques</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #e8ecef, #cdd6dd);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      animation: fadeInUp 0.5s ease;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 25px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 400px;
+      max-width: 95%;
+    }
+
+    .logo {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+
+    .botoes-tanque {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .botao-tanque {
+      padding: 12px;
+      border: 2px solid #333;
+      border-radius: 12px;
+      background: #f5f5f5;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 45%;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+
+    .botao-tanque:hover {
+      background: #0077b6;
+      color: #fff;
+      border-color: #1A55C;
+      transform: scale(1.03);
+    }
+
+    .botao-tanque.ativo {
+      background: #0077b6;
+      color: #fff;
+      border-color: #1A55C;
+      position: relative;
+    }
+
+    .botao-tanque.ativo::after {
+      content: "✔";
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      font-size: 14px;
+    }
+
+    input {
+      padding: 12px;
+      font-size: 16px;
+      width: 85%;
+      border: 2px solid #555;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #0077b6;
+      box-shadow: 0 0 6px rgba(0, 119, 182, 0.4);
+    }
+
+    input:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .mensagem-erro {
+      color: red;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .resultado {
+      margin-top: 15px;
+      font-size: 26px;
+      font-weight: bold;
+      color: #111;
+      background: #e1f5fe;
+      padding: 10px;
+      border-radius: 12px;
+      transition: background 0.3s;
+    }
+
+    .tanque {
+      margin: 20px auto;
+      width: 250px;
+      height: 130px;
+    }
+
+    .combustivel {
+      fill: #8a9aa9;
+      transition: all 0.5s ease-in-out;
+    }
+
+    rect.tanque-borda {
+      stroke: #333;
+      stroke-width: 5;
+    }
+
+    .btn-voltar {
+      margin-top: 10px;
+      background-color: #7D1A1A;
+      width: auto;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(183,28,28,0.6);
+      cursor: pointer;
+      border: none;
+      color: white;
+    }
+
+    .btn-voltar:hover {
+      background-color: #5C1010;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+        width: 90%;
+      }
+
+      .botao-tanque {
+        font-size: 12px;
+        padding: 10px;
+      }
+
+      .resultado {
+        font-size: 22px;
+      }
+
+      .tanque {
+        width: 100%;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="Logo" class="logo" id="logo">
+
+    <h1>SELECIONE O TANQUE</h1>
+    <div class="botoes-tanque">
+     <button class="botao-tanque" id="btnNormal" onclick="selecionarTanque('normal')">⛽ Combustível</button>
+    <button class="botao-tanque" id="btnArla" onclick="selecionarTanque('arla')">💧 Arla</button>
+    </div>
+
+    <h1>MEDIDA DA RÉGUA</h1>
+   <input type="number" id="medida" placeholder="Ex: 140,8" step="0.1" oninput="calcular()" onkeypress="if(event.key === 'Enter') calcular()" disabled>
+    
+    <div class="mensagem-erro" id="mensagemErro"></div>
+    
+    <svg class="tanque" viewBox="0 0 250 130">
+      <rect x="10" y="10" width="230" height="110" rx="50" ry="50" class="tanque-borda" fill="none" />
+      <mask id="maskTanque">
+        <rect x="10" y="10" width="230" height="110" rx="50" ry="50" fill="white"/>
+      </mask>
+      <rect id="combustivel" class="combustivel" x="10" y="120" width="230" height="0" mask="url(#maskTanque)" />
+    </svg>
+    
+    <div class="resultado" id="resultado">0 L</div>
+
+    <!-- Botão voltar -->
+    <button class="btn-voltar" onclick="window.location.href='index.html'">VOLTAR</button>
+  </div>
+
+  <script>
+    let tipoSelecionado = null;
+
+    // === TABELA DO TANQUE NORMAL ===
+    const tabelaNormal = {
+      0:0, 1:13, 2:37, 3:68, 4:104, 5:145, 6:191, 7:240, 8:293, 9:349,
+      10:408, 11:470, 12:535, 13:603, 14:673, 15:745, 16:820, 17:897,
+      18:976, 19:1058, 20:1141, 21:1226, 22:1313, 23:1401, 24:1492,
+      25:1584, 26:1678, 27:1774, 28:1871, 29:1969, 30:2069, 31:2171,
+      32:2274, 33:2378, 34:2484, 35:2591, 36:2699, 37:2809, 38:2920,
+      39:3032, 40:3145, 41:3259, 42:3375, 43:3491, 44:3609, 45:3728,
+      46:3848, 47:3969, 48:4090, 49:4213, 50:4337, 51:4462, 52:4587,
+      53:4714, 54:4841, 55:4970, 56:5099, 57:5229, 58:5359, 59:5491,
+      60:5623, 61:5727, 62:5890, 63:6025, 64:6160, 65:6296, 66:6433,
+      67:6570, 68:6709, 69:6847, 70:6987, 71:7127, 72:7267, 73:7408,
+      74:7550, 75:7692, 76:7835, 77:7979, 78:8122, 79:8267, 80:8412,
+      81:8557, 82:8703, 83:8850, 84:8996, 85:9144, 86:9291, 87:9440,
+      88:9588, 89:9737, 90:9886, 91:10036, 92:10186, 93:10337, 94:10488,
+      95:10639, 96:10790, 97:10942, 98:11094, 99:11246, 100:11399,
+      101:11552, 102:11705, 103:11858, 104:12012, 105:12166, 106:12320,
+      107:12474, 108:12629, 109:12784, 110:12938, 111:13094, 112:13249,
+      113:13404, 114:13560, 115:13715, 116:13871, 117:14027, 118:14183,
+      119:14339, 120:14495, 121:14651, 122:14807, 123:14964, 124:15120,
+      125:15277, 126:15433, 127:15589, 128:15746, 129:15902, 130:16059,
+      131:16215, 132:16372, 133:16528, 134:16684, 135:16840, 136:16996,
+      137:17152, 138:17308, 139:17464, 140:17620, 141:17776, 142:17931,
+      143:18086, 144:18242, 145:18397, 146:18552, 147:18706, 148:18861,
+      149:19015, 150:19169, 151:19323, 152:19477, 153:19630, 154:19783,
+      155:19936, 156:20089, 157:20241, 158:20393, 159:20545, 160:20696,
+      161:20847, 162:20998, 163:21148, 164:21298, 165:21448, 166:21597,
+      167:21746, 168:21895, 169:22043, 170:22191, 171:22338, 172:22485,
+      173:22631, 174:22777, 175:22922, 176:23067, 177:23212, 178:23356,
+      179:23499, 180:23642, 181:23784, 182:23923, 183:24067, 184:24207,
+      185:24347, 186:24486, 187:24626, 188:24763, 189:24900, 190:25037,
+      191:25173, 192:25308, 193:25443, 194:25577, 195:25710, 196:25842,
+      197:25973, 198:26104, 199:26234, 200:26363, 201:26491, 202:26618,
+      203:26745, 204:26870, 205:26995, 206:27119, 207:27241, 208:27363,
+      209:27484, 210:27604, 211:27722, 212:27840, 213:27956, 214:28072,
+      215:28186, 216:28299, 217:28411, 218:28522, 219:28634, 220:28740,
+      221:28846, 222:28952, 223:29056, 224:29159, 225:29260, 226:29360,
+      227:29459, 228:29556, 229:29654, 230:29745, 231:29837, 232:29927,
+      233:30016, 234:30103, 235:30187, 236:30270, 237:30351, 238:30430,
+      239:30507, 240:30582, 241:30654, 242:30724, 243:30791, 244:30856,
+      245:30918, 246:30976, 247:31032, 248:31085, 249:31134, 250:31179,
+      251:31220, 252:31255, 253:31286, 254:31309
+    };
+
+    // === TABELA COMPLETA DO TANQUE ARLA (0 A 156 CM) ===
+    const tabelaArla = {
+      0:0,1:33,2:67,3:100,4:133,5:167,6:200,7:233,8:267,9:300,
+      10:333,11:367,12:400,13:433,14:467,15:500,16:533,17:567,
+      18:600,19:633,20:667,21:700,22:733,23:767,24:800,25:833,
+      26:867,27:900,28:933,29:967,30:1000,31:1056,32:1111,33:1167,
+      34:1222,35:1278,36:1333,37:1389,38:1444,39:1500,40:1556,
+      41:1611,42:1667,43:1722,44:1778,45:1833,46:1889,47:1944,
+      48:2000,49:2063,50:2125,51:2188,52:2250,53:2313,54:2375,
+      55:2438,56:2500,57:2563,58:2625,59:2688,60:2750,61:2813,
+      62:2875,63:2938,64:3000,65:3063,66:3125,67:3188,68:3250,
+      69:3313,70:3375,71:3438,72:3500,73:3563,74:3625,75:3688,
+      76:3750,77:3813,78:3875,79:3938,80:4000,81:4067,82:4133,
+      83:4200,84:4267,85:4333,86:4400,87:4467,88:4533,89:4600,
+      90:4667,91:4733,92:4800,93:4867,94:4933,95:5000,96:5063,
+      97:5125,98:5188,99:5250,100:5313,101:5375,102:5438,103:5500,
+      104:5563,105:5625,106:5688,107:5750,108:5813,109:5875,110:5938,
+      111:6000,112:6111,113:6222,114:6333,115:6444,116:6556,117:6667,
+      118:6778,119:6889,120:7000,121:7111,122:7222,123:7333,124:7444,
+      125:7556,126:7667,127:7778,128:7889,129:8000,130:8074,131:8148,
+      132:8222,133:8296,134:8370,135:8444,136:8518,137:8592,138:8666,
+      139:8740,140:8814,141:8888,142:8962,143:9036,144:9110,145:9184,
+      146:9258,147:9332,148:9406,149:9480,150:9554,151:9628,152:9702,
+      153:9776,154:9850,155:9924,156:10000
+    };
+
+    function selecionarTanque(tipo) {
+      tipoSelecionado = tipo;
+      document.getElementById('medida').disabled = false;
+      document.getElementById('mensagemErro').style.display = 'none';
+      document.getElementById('resultado').textContent = '0 L';
+
+      if (tipo === 'normal') {
+        document.getElementById('btnNormal').classList.add('ativo');
+        document.getElementById('btnArla').classList.remove('ativo');
+      } else if (tipo === 'arla') {
+        document.getElementById('btnArla').classList.add('ativo');
+        document.getElementById('btnNormal').classList.remove('ativo');
+      }
+
+      // Reset input and fill level
+      document.getElementById('medida').value = '';
+      atualizarCombustivel(0);
+    }
+
+    function calcular() {
+      const medida = parseFloat(document.getElementById('medida').value.replace(',', '.'));
+      const erro = document.getElementById('mensagemErro');
+      const resultado = document.getElementById('resultado');
+
+      if (!tipoSelecionado) {
+        erro.style.display = 'block';
+        erro.textContent = 'Selecione o tanque primeiro.';
+        resultado.textContent = '0 L';
+        atualizarCombustivel(0);
+        return;
+      }
+      
+      function animarLitros(valorFinal) {
+  const elemento = document.getElementById('resultado');
+  const valorInicial = parseFloat(elemento.textContent.replace(/\D/g, '')) || 0;
+  const duracao = 500; // duração da animação em milissegundos
+  const inicio = performance.now();
+
+  function animar(tempoAtual) {
+    const progresso = Math.min((tempoAtual - inicio) / duracao, 1);
+    const valorInterpolado = valorInicial + (valorFinal - valorInicial) * progresso;
+    elemento.textContent = Math.round(valorInterpolado).toLocaleString('pt-BR') + ' L';
+
+    if (progresso < 1) {
+      requestAnimationFrame(animar);
+    }
+  }
+
+  requestAnimationFrame(animar);
+}
+
+      if (isNaN(medida)) {
+        erro.style.display = 'block';
+        erro.textContent = 'Informe uma medida válida.';
+        resultado.textContent = '0 L';
+        atualizarCombustivel(0);
+        return;
+      }
+
+      // Verifica se a medida está dentro do intervalo válido para o tanque escolhido
+      let tabela = tipoSelecionado === 'normal' ? tabelaNormal : tabelaArla;
+      let maxMedida = Math.max(...Object.keys(tabela).map(Number));
+      let minMedida = Math.min(...Object.keys(tabela).map(Number));
+
+      if (medida < minMedida || medida > maxMedida) {
+        erro.style.display = 'block';
+        erro.textContent = `Medida deve estar entre ${minMedida} e ${maxMedida} cm.`;
+        resultado.textContent = '0 L';
+        atualizarCombustivel(0);
+        return;
+      }
+
+      erro.style.display = 'none';
+
+      // Interpolação linear para valores fracionados (ex: 140.8)
+      let medidaChaveInferior = Math.floor(medida);
+      let medidaChaveSuperior = Math.ceil(medida);
+
+      if (medidaChaveInferior === medidaChaveSuperior) {
+        // Valor exato na tabela
+        var litros = tabela[medidaChaveInferior];
+      } else {
+        // Interpolação
+        let valorInferior = tabela[medidaChaveInferior];
+        let valorSuperior = tabela[medidaChaveSuperior];
+        let proporcao = medida - medidaChaveInferior;
+        var litros = valorInferior + proporcao * (valorSuperior - valorInferior);
+      }
+
+      animarLitros(litros);
+
+      // Atualizar SVG do combustível
+      atualizarCombustivel(medida);
+    }
+
+    function atualizarCombustivel(medida) {
+  const combustivel = document.getElementById('combustivel');
+  const maxAltura = 110;
+  const maxMedida = tipoSelecionado === 'normal' ? 254 : 156;
+
+  const alturaAlvo = (medida / maxMedida) * maxAltura;
+  const yAlvo = 120 - alturaAlvo;
+
+  const alturaAtual = parseFloat(combustivel.getAttribute('height')) || 0;
+  const yAtual = parseFloat(combustivel.getAttribute('y')) || 120;
+
+  const duracao = 400;
+  const inicio = performance.now();
+
+  function animar(t) {
+    const progresso = Math.min((t - inicio) / duracao, 1);
+
+    const novaAltura = alturaAtual + (alturaAlvo - alturaAtual) * progresso;
+    const novoY = yAtual + (yAlvo - yAtual) * progresso;
+
+    combustivel.setAttribute('height', novaAltura);
+    combustivel.setAttribute('y', novoY);
+
+    if (progresso < 1) {
+      requestAnimationFrame(animar);
+    }
+  }
+
+  requestAnimationFrame(animar);
+}
+  </script>
+</body>
+</html>
