@@ -110,15 +110,52 @@
       display: none;
     }
 
-    .resultado {
+    .resultado-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
       margin-top: 15px;
+    }
+
+    .resultado {
       font-size: 26px;
       font-weight: bold;
       color: #111;
       background: #e1f5fe;
-      padding: 10px;
+      padding: 10px 15px;
       border-radius: 12px;
       transition: background 0.3s;
+      flex-grow: 1;
+    }
+
+    .btn-copiar {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .btn-copiar:hover {
+      background-color: #218838;
+      transform: translateY(-2px);
+    }
+
+    .btn-copiar:active {
+      transform: translateY(0);
+    }
+
+    .btn-copiar.copiado {
+      background-color: #17a2b8;
     }
 
     .tanque {
@@ -173,6 +210,15 @@
       .tanque {
         width: 100%;
       }
+      
+      .resultado-container {
+        flex-direction: column;
+      }
+      
+      .btn-copiar {
+        width: 100%;
+        justify-content: center;
+      }
     }
 
     @keyframes fadeInUp {
@@ -210,7 +256,16 @@
       <rect id="combustivel" class="combustivel" x="10" y="120" width="230" height="0" mask="url(#maskTanque)" />
     </svg>
     
-    <div class="resultado" id="resultado">0 L</div>
+    <div class="resultado-container">
+      <div class="resultado" id="resultado">0 L</div>
+      <button class="btn-copiar" id="btnCopiar" onclick="copiarResultado()" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+          <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+        </svg>
+        Copiar
+      </button>
+    </div>
 
     <!-- Botão voltar -->
     <button class="btn-voltar" onclick="window.location.href='index.html'">VOLTAR</button>
@@ -294,6 +349,7 @@
       document.getElementById('medida').disabled = false;
       document.getElementById('mensagemErro').style.display = 'none';
       document.getElementById('resultado').textContent = '0 L';
+      document.getElementById('btnCopiar').style.display = 'none';
 
       if (tipo === 'normal') {
         document.getElementById('btnNormal').classList.add('ativo');
@@ -312,38 +368,41 @@
       const medida = parseFloat(document.getElementById('medida').value.replace(',', '.'));
       const erro = document.getElementById('mensagemErro');
       const resultado = document.getElementById('resultado');
+      const btnCopiar = document.getElementById('btnCopiar');
 
       if (!tipoSelecionado) {
         erro.style.display = 'block';
         erro.textContent = 'Selecione o tanque primeiro.';
         resultado.textContent = '0 L';
+        btnCopiar.style.display = 'none';
         atualizarCombustivel(0);
         return;
       }
       
       function animarLitros(valorFinal) {
-  const elemento = document.getElementById('resultado');
-  const valorInicial = parseFloat(elemento.textContent.replace(/\D/g, '')) || 0;
-  const duracao = 500; // duração da animação em milissegundos
-  const inicio = performance.now();
+        const elemento = document.getElementById('resultado');
+        const valorInicial = parseFloat(elemento.textContent.replace(/\D/g, '')) || 0;
+        const duracao = 500; // duração da animação em milissegundos
+        const inicio = performance.now();
 
-  function animar(tempoAtual) {
-    const progresso = Math.min((tempoAtual - inicio) / duracao, 1);
-    const valorInterpolado = valorInicial + (valorFinal - valorInicial) * progresso;
-    elemento.textContent = Math.round(valorInterpolado).toLocaleString('pt-BR') + ' L';
+        function animar(tempoAtual) {
+          const progresso = Math.min((tempoAtual - inicio) / duracao, 1);
+          const valorInterpolado = valorInicial + (valorFinal - valorInicial) * progresso;
+          elemento.textContent = Math.round(valorInterpolado).toLocaleString('pt-BR') + ' L';
 
-    if (progresso < 1) {
-      requestAnimationFrame(animar);
-    }
-  }
+          if (progresso < 1) {
+            requestAnimationFrame(animar);
+          }
+        }
 
-  requestAnimationFrame(animar);
-}
+        requestAnimationFrame(animar);
+      }
 
       if (isNaN(medida)) {
         erro.style.display = 'block';
         erro.textContent = 'Informe uma medida válida.';
         resultado.textContent = '0 L';
+        btnCopiar.style.display = 'none';
         atualizarCombustivel(0);
         return;
       }
@@ -357,6 +416,7 @@
         erro.style.display = 'block';
         erro.textContent = `Medida deve estar entre ${minMedida} e ${maxMedida} cm.`;
         resultado.textContent = '0 L';
+        btnCopiar.style.display = 'none';
         atualizarCombustivel(0);
         return;
       }
@@ -379,41 +439,78 @@
       }
 
       animarLitros(litros);
+      
+      // Mostrar botão de copiar após o cálculo
+      setTimeout(() => {
+        btnCopiar.style.display = 'flex';
+      }, 500);
 
       // Atualizar SVG do combustível
       atualizarCombustivel(medida);
     }
 
     function atualizarCombustivel(medida) {
-  const combustivel = document.getElementById('combustivel');
-  const maxAltura = 110;
-  const maxMedida = tipoSelecionado === 'normal' ? 254 : 156;
+      const combustivel = document.getElementById('combustivel');
+      const maxAltura = 110;
+      const maxMedida = tipoSelecionado === 'normal' ? 254 : 156;
 
-  const alturaAlvo = (medida / maxMedida) * maxAltura;
-  const yAlvo = 120 - alturaAlvo;
+      const alturaAlvo = (medida / maxMedida) * maxAltura;
+      const yAlvo = 120 - alturaAlvo;
 
-  const alturaAtual = parseFloat(combustivel.getAttribute('height')) || 0;
-  const yAtual = parseFloat(combustivel.getAttribute('y')) || 120;
+      const alturaAtual = parseFloat(combustivel.getAttribute('height')) || 0;
+      const yAtual = parseFloat(combustivel.getAttribute('y')) || 120;
 
-  const duracao = 400;
-  const inicio = performance.now();
+      const duracao = 400;
+      const inicio = performance.now();
 
-  function animar(t) {
-    const progresso = Math.min((t - inicio) / duracao, 1);
+      function animar(t) {
+        const progresso = Math.min((t - inicio) / duracao, 1);
 
-    const novaAltura = alturaAtual + (alturaAlvo - alturaAtual) * progresso;
-    const novoY = yAtual + (yAlvo - yAtual) * progresso;
+        const novaAltura = alturaAtual + (alturaAlvo - alturaAtual) * progresso;
+        const novoY = yAtual + (yAlvo - yAtual) * progresso;
 
-    combustivel.setAttribute('height', novaAltura);
-    combustivel.setAttribute('y', novoY);
+        combustivel.setAttribute('height', novaAltura);
+        combustivel.setAttribute('y', novoY);
 
-    if (progresso < 1) {
+        if (progresso < 1) {
+          requestAnimationFrame(animar);
+        }
+      }
+
       requestAnimationFrame(animar);
     }
-  }
 
-  requestAnimationFrame(animar);
-}
+    function copiarResultado() {
+      const resultado = document.getElementById('resultado').textContent;
+      const btnCopiar = document.getElementById('btnCopiar');
+      
+      // Usando a API Clipboard para copiar o texto
+      navigator.clipboard.writeText(resultado).then(() => {
+        // Feedback visual de sucesso
+        btnCopiar.classList.add('copiado');
+        btnCopiar.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+          </svg>
+          Copiado!
+        `;
+        
+        // Restaurar o botão após 2 segundos
+        setTimeout(() => {
+          btnCopiar.classList.remove('copiado');
+          btnCopiar.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+            </svg>
+            Copiar
+          `;
+        }, 2000);
+      }).catch(err => {
+        console.error('Erro ao copiar: ', err);
+        alert('Erro ao copiar o resultado. Tente novamente.');
+      });
+    }
   </script>
 </body>
 </html>
