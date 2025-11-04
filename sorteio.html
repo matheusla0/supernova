@@ -40,6 +40,7 @@
       color: #fff; transition: background 0.3s ease; font-weight: bold;
     }
     button:hover { background-color: #0F203A; }
+    button:disabled { background-color: #cccccc; cursor: not-allowed; }
     #resultado { margin-top: 30px; text-align: left; }
     .item {
       background: #FFF176; margin: 12px 0; padding: 14px 18px;
@@ -52,6 +53,10 @@
       background-color: #FFEBEE; color: #7D1A1A; font-weight: bold;
       padding: 16px; border-radius: 8px; margin-top: 20px; text-align: center;
       border: 2px dashed #7D1A1A;
+    }
+    .assinatura-digital {
+      font-size: 12px; color: #666; margin-top: 5px; text-align: center;
+      font-family: monospace;
     }
     .btn-voltar {
       margin-top: 10px; background-color: #7D1A1A; width: auto;
@@ -67,6 +72,7 @@
       .item { font-size: 12px; text-align: center; padding: 6mm; }
       .label, button { display: none; }
       #resultado { font-size: 14px; text-align: center; }
+      .assinatura-digital { display: block !important; }
     }
   </style>
 </head>
@@ -108,6 +114,8 @@
     let modo = 'tarefas';
     let nomes = [], tarefas = [], horarios = [];
     let sorteioFinalizado = false;
+    let hashOriginal = '';
+    let timestampSorteio = '';
 
     // Variáveis para controle do Kelton
     const variacoesKelton = ['KELTON', 'KELTOM', 'kelton', 'keltom', 'Kelton', 'Keltom'];
@@ -119,6 +127,74 @@
       '12horas', '12 horas', '12 Horas', '12Horas',
       '12', '12 ', ' 12:00', ' 12h', ' 12'
     ];
+
+    // Função para gerar hash de segurança
+    function gerarHash(dados) {
+      let hash = 0;
+      const stringDados = JSON.stringify(dados) + timestampSorteio;
+      for (let i = 0; i < stringDados.length; i++) {
+        const char = stringDados.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(36);
+    }
+
+    // Função para verificar integridade dos dados
+    function verificarIntegridade() {
+      const dadosAtuais = {
+        nomes: nomes,
+        tarefas: modo === 'tarefas' ? tarefas : horarios,
+        modo: modo,
+        timestamp: timestampSorteio
+      };
+      const hashAtual = gerarHash(dadosAtuais);
+      return hashAtual === hashOriginal;
+    }
+
+    // Desabilitar clique direito e F12
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // Desabilitar F12, Ctrl+Shift+I, etc.
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+        (e.ctrlKey && e.key === 'U')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Detectar alterações no DOM (tentativas de manipulação)
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList' || mutation.type === 'characterData') {
+          const resultado = document.getElementById('resultado');
+          if (mutation.target === resultado || resultado.contains(mutation.target)) {
+            if (sorteioFinalizado && !verificarIntegridade()) {
+              alert('ALTERAÇÃO DETECTADA! O SORTEIO SERÁ REINICIADO POR SEGURANÇA.');
+              reiniciar();
+            }
+          }
+        }
+      });
+    });
+
+    // Iniciar observação quando a página carregar
+    window.addEventListener('load', function() {
+      const resultado = document.getElementById('resultado');
+      observer.observe(resultado, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      });
+    });
 
     function selecionarModo(novoModo) {
       modo = novoModo;
@@ -168,6 +244,16 @@
         sortearDescanso();
       }
 
+      // Gerar timestamp e hash de segurança
+      timestampSorteio = Date.now().toString();
+      const dadosSorteio = {
+        nomes: nomes,
+        tarefas: modo === 'tarefas' ? tarefas : horarios,
+        modo: modo,
+        timestamp: timestampSorteio
+      };
+      hashOriginal = gerarHash(dadosSorteio);
+
       document.getElementById("btnSortear").disabled = true;
     }
 
@@ -199,13 +285,20 @@
       // Embaralha os pares finais para mais aleatoriedade
       pares = shuffleArray(pares);
       
-      // Exibe os resultados
+      // Exibe os resultados com assinatura digital
       for (let par of pares) {
         const item = document.createElement("div");
         item.className = "item";
         item.innerHTML = `<strong>${par.nome}</strong> FICOU COM A TAREFA: <strong>${par.tarefa}</strong>`;
         resultado.appendChild(item);
       }
+      
+      // Adicionar assinatura digital
+      const assinatura = document.createElement("div");
+      assinatura.className = "assinatura-digital";
+      assinatura.textContent = `Sorteio válido: ${new Date().toLocaleString()} | Hash: ${hashOriginal.substring(0, 8)}`;
+      assinatura.style.display = 'none'; // Só aparece na impressão
+      resultado.appendChild(assinatura);
       
       finalizarSorteio();
     }
@@ -276,15 +369,20 @@
         return minutosA - minutosB;
       });
 
-      // Exibe os resultados
+      // Exibe os resultados com assinatura digital
       for (let par of pares) {
         const item = document.createElement("div");
         item.className = "item";
-        
-        // Exibe apenas o nome e horário, sem a mensagem adicional
         item.innerHTML = `<strong>${par.nome}</strong> DESCANSO ÀS: <strong>${par.horario}</strong>`;
         resultado.appendChild(item);
       }
+
+      // Adicionar assinatura digital
+      const assinatura = document.createElement("div");
+      assinatura.className = "assinatura-digital";
+      assinatura.textContent = `Sorteio válido: ${new Date().toLocaleString()} | Hash: ${hashOriginal.substring(0, 8)}`;
+      assinatura.style.display = 'none'; // Só aparece na impressão
+      resultado.appendChild(assinatura);
       
       finalizarSorteio();
     }
@@ -356,11 +454,15 @@
     function reiniciarResultado() {
       document.getElementById("resultado").innerHTML = "";
       sorteioFinalizado = false;
+      hashOriginal = '';
+      timestampSorteio = '';
     }
 
     function reiniciar() {
       nomes = []; tarefas = []; horarios = [];
       sorteioFinalizado = false;
+      hashOriginal = '';
+      timestampSorteio = '';
       document.getElementById("resultado").innerHTML = "";
       document.getElementById("btnSortear").disabled = false;
       document.getElementById("inputNomes").value = "";
@@ -368,7 +470,14 @@
       document.getElementById("inputHorarios").value = "";
     }
 
-    function imprimirPagina() { window.print(); }
+    function imprimirPagina() { 
+      // Verificar integridade antes de imprimir
+      if (sorteioFinalizado && !verificarIntegridade()) {
+        alert('ALTERAÇÃO DETECTADA! O SORTEIO FOI COMPROMETIDO. REINICIE O SORTEIO.');
+        return;
+      }
+      window.print(); 
+    }
   </script>
 </body>
 </html>
