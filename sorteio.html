@@ -109,6 +109,17 @@
     let nomes = [], tarefas = [], horarios = [];
     let sorteioFinalizado = false;
 
+    // Variáveis para controle do Kelton
+    const variacoesKelton = ['KELTON', 'KELTOM', 'kelton', 'keltom', 'Kelton', 'Keltom'];
+    
+    // Todas as variações do horário 12:00 que devem ser bloqueadas para o Kelton
+    const horariosProibidosKelton = [
+      '12:00', '12:00 ', '12:00h', '12:00 H', '12:00H',
+      '12h', '12h ', '12 h', '12 H', '12H',
+      '12horas', '12 horas', '12 Horas', '12Horas',
+      '12', '12 ', ' 12:00', ' 12h', ' 12'
+    ];
+
     function selecionarModo(novoModo) {
       modo = novoModo;
       document.getElementById('btnTarefas').classList.remove('active');
@@ -137,7 +148,7 @@
         alert("PREENCHA OS NOMES DOS COLABORADORES.");
         return;
       }
-      nomes = nomesTexto.split("\n").map(n => n.trim().toUpperCase()).filter(n => n !== "");
+      nomes = nomesTexto.split("\n").map(n => n.trim()).filter(n => n !== "");
 
       if (modo === 'tarefas') {
         const tarefasTexto = document.getElementById("inputTarefas").value.trim();
@@ -162,16 +173,40 @@
 
     function sortearTarefas() {
       let resultado = document.getElementById("resultado");
-      while (nomes.length && tarefas.length) {
-        const nomeIndex = Math.floor(Math.random() * nomes.length);
-        const tarefaIndex = Math.floor(Math.random() * tarefas.length);
-        const nome = nomes.splice(nomeIndex, 1)[0];
-        const tarefa = tarefas.splice(tarefaIndex, 1)[0];
+      
+      // Método mais aleatório: criar pares nome-tarefa e embaralhar
+      let pares = [];
+      
+      // Se houver mais tarefas que nomes, alguns farão mais de uma tarefa
+      // Se houver mais nomes que tarefas, algumas tarefas serão compartilhadas
+      let tarefasEmbaralhadas = shuffleArray([...tarefas]);
+      let nomesEmbaralhados = shuffleArray([...nomes]);
+      
+      let indexTarefa = 0;
+      
+      for (let nome of nomesEmbaralhados) {
+        if (indexTarefa >= tarefasEmbaralhadas.length) {
+          // Se acabaram as tarefas, recomeça a lista de tarefas
+          tarefasEmbaralhadas = shuffleArray([...tarefas]);
+          indexTarefa = 0;
+        }
+        
+        const tarefa = tarefasEmbaralhadas[indexTarefa];
+        pares.push({ nome, tarefa });
+        indexTarefa++;
+      }
+      
+      // Embaralha os pares finais para mais aleatoriedade
+      pares = shuffleArray(pares);
+      
+      // Exibe os resultados
+      for (let par of pares) {
         const item = document.createElement("div");
         item.className = "item";
-        item.innerHTML = `<strong>${nome}</strong> FICOU COM A TAREFA: <strong>${tarefa}</strong>`;
+        item.innerHTML = `<strong>${par.nome}</strong> FICOU COM A TAREFA: <strong>${par.tarefa}</strong>`;
         resultado.appendChild(item);
       }
+      
       finalizarSorteio();
     }
 
@@ -181,25 +216,133 @@
         return;
       }
 
-      nomes = shuffleArray(nomes);
-      horarios = shuffleArray(horarios);
+      // Verifica se Kelton está na lista
+      const keltonIndex = nomes.findIndex(nome => 
+        variacoesKelton.includes(nome.toUpperCase())
+      );
+
+      let horariosDisponiveis = [...horarios];
+      let nomesParaSortear = [...nomes];
+      
+      // Ordena os horários em ordem crescente para exibição final
+      horariosDisponiveis.sort((a, b) => {
+        // Converte horários para minutos para ordenação correta
+        const minutosA = converterHorarioParaMinutos(a);
+        const minutosB = converterHorarioParaMinutos(b);
+        return minutosA - minutosB;
+      });
 
       let resultado = document.getElementById("resultado");
-      for (let i = 0; i < nomes.length; i++) {
+      let pares = [];
+
+      // Se Kelton está na lista, trata ele primeiro
+      if (keltonIndex !== -1) {
+        const kelton = nomesParaSortear.splice(keltonIndex, 1)[0];
+        
+        // Cria lista de horários disponíveis para Kelton (excluindo todos os horários proibidos)
+        const horariosParaKelton = horariosDisponiveis.filter(h => 
+          !horariosProibidosKelton.includes(h.trim())
+        );
+        
+        if (horariosParaKelton.length === 0) {
+          alert("NÃO HÁ HORÁRIOS DISPONÍVEIS PARA O KELTON (EXCLUINDO TODOS OS HORÁRIOS DE 12:00).");
+          return;
+        }
+
+        // Sorteia um horário aleatório para Kelton
+        const horarioKelton = horariosParaKelton[Math.floor(Math.random() * horariosParaKelton.length)];
+        
+        // Remove o horário escolhido da lista geral
+        horariosDisponiveis = horariosDisponiveis.filter(h => h !== horarioKelton);
+        
+        pares.push({ nome: kelton, horario: horarioKelton });
+      }
+
+      // Embaralha os nomes restantes
+      nomesParaSortear = shuffleArray(nomesParaSortear);
+      
+      // Distribui os horários restantes para os outros colaboradores
+      for (let i = 0; i < nomesParaSortear.length; i++) {
+        pares.push({ 
+          nome: nomesParaSortear[i], 
+          horario: horariosDisponiveis[i] 
+        });
+      }
+
+      // Ordena os pares por horário para exibição
+      pares.sort((a, b) => {
+        const minutosA = converterHorarioParaMinutos(a.horario);
+        const minutosB = converterHorarioParaMinutos(b.horario);
+        return minutosA - minutosB;
+      });
+
+      // Exibe os resultados
+      for (let par of pares) {
         const item = document.createElement("div");
         item.className = "item";
-        item.innerHTML = `<strong>${nomes[i]}</strong> DESCANSO ÀS: <strong>${horarios[i]}</strong>`;
+        
+        // Exibe apenas o nome e horário, sem a mensagem adicional
+        item.innerHTML = `<strong>${par.nome}</strong> DESCANSO ÀS: <strong>${par.horario}</strong>`;
         resultado.appendChild(item);
       }
+      
       finalizarSorteio();
     }
 
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    // Função para converter qualquer formato de horário para minutos
+    function converterHorarioParaMinutos(horario) {
+      // Remove espaços e converte para minúsculas
+      const horarioLimpo = horario.trim().toLowerCase();
+      
+      // Tenta extrair horas e minutos
+      let horas, minutos = 0;
+      
+      // Verifica formato HH:MM
+      const matchHHMM = horarioLimpo.match(/^(\d{1,2}):(\d{2})/);
+      if (matchHHMM) {
+        horas = parseInt(matchHHMM[1]);
+        minutos = parseInt(matchHHMM[2]);
+      } 
+      // Verifica formato com "h" (ex: 12h, 12 h)
+      else {
+        const matchH = horarioLimpo.match(/^(\d{1,2})\s*h/);
+        if (matchH) {
+          horas = parseInt(matchH[1]);
+        }
+        // Se não encontrar padrão, tenta pegar apenas números
+        else {
+          const apenasNumeros = horarioLimpo.match(/\d+/);
+          if (apenasNumeros) {
+            horas = parseInt(apenasNumeros[0]);
+          } else {
+            horas = 0;
+          }
+        }
       }
-      return array;
+      
+      return horas * 60 + minutos;
+    }
+
+    function shuffleArray(array) {
+      // Algoritmo Fisher-Yates moderno para melhor aleatoriedade
+      const newArray = [...array];
+      for (let i = newArray.length - 1; i > 0; i--) {
+        // Usando crypto.getRandomValues para maior aleatoriedade quando disponível
+        const j = Math.floor(getRandom() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      }
+      return newArray;
+    }
+
+    function getRandom() {
+      // Tenta usar crypto.getRandomValues para melhor aleatoriedade
+      if (window.crypto && window.crypto.getRandomValues) {
+        const array = new Uint32Array(1);
+        window.crypto.getRandomValues(array);
+        return array[0] / (0xFFFFFFFF + 1);
+      }
+      // Fallback para Math.random()
+      return Math.random();
     }
 
     function finalizarSorteio() {
