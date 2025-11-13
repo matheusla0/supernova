@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lubrificante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { 
+            background: linear-gradient(to right, #e3f2fd, #fffde7); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+        }
+        
+        /* Container principal centralizado */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        .container { 
+            width: 90vw; 
+            max-width: 500px; 
+            background: #ffffff; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+        
+        .login-container { 
+            background: white; 
+            padding: 50px 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 450px; 
+            text-align: center; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .login-logo { 
+            max-width: 220px; 
+            height: auto; 
+            margin-bottom: 40px; 
+        }
+        
+        .form-group { 
+            margin-bottom: 25px; 
+            text-align: left; 
+            width: 100%;
+        }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 10px; 
+            font-weight: 600; 
+            color: #1A355C; 
+            font-size: 15px;
+        }
+        .form-group input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 2px solid #1A355C; 
+            border-radius: 8px; 
+            background-color: #e3f2fd; 
+            color: #1A355C; 
+            font-weight: bold; 
+            font-size: 16px;
+        }
+        .form-group input:focus { 
+            outline: none; 
+            border-color: #1A355C; 
+            box-shadow: 0 0 0 3px rgba(26,53,92,0.1); 
+        }
+        
+        button { 
+            padding: 14px 24px; 
+            border: none; 
+            border-radius: 8px;
+            font-size: 16px; 
+            cursor: pointer; 
+            background-color: #1A355C;
+            color: #fff; 
+            transition: background 0.3s ease; 
+            font-weight: bold; 
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #0F203A; }
+        
+        .toggle-forms { 
+            margin-top: 25px; 
+            text-align: center; 
+            width: 100%;
+        }
+        .toggle-forms button { 
+            background: none; 
+            color: #1A355C; 
+            text-decoration: underline; 
+            padding: 8px; 
+            width: auto; 
+            font-size: 15px;
+            margin: 0 auto;
+        }
+        .toggle-forms button:hover { background: none; color: #0F203A; }
+        
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(15,23,42,0.7); 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 1000; 
+        }
+        .modal-content { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            width: 450px; 
+            max-width: 90%; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+        }
+        .modal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 25px; 
+            padding-bottom: 18px; 
+            border-bottom: 2px solid #e2e8f0; 
+        }
+        .close { 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: #64748b; 
+        }
+        
+        .turn-selection { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 25px; 
+        }
+        .turn-btn { 
+            padding: 12px 20px; 
+            font-size: 15px; 
+            border: 2px solid #1A355C;
+            background-color: #fff; 
+            color: #1A355C; 
+            border-radius: 8px;
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.3s;
+            flex: 1;
+        }
+        .turn-btn.active { 
+            background-color: #1A355C; 
+            color: white; 
+        }
+        
+        /* Estilos para o sistema principal */
+        #main-container { 
+            width: 95vw; 
+            height: 90vh; 
+            max-width: none; 
+            display: none;
+            flex-direction: column;
+        }
+        
+        header { 
+            background: linear-gradient(135deg, #1A355C, #0F203A); 
+            color: white; 
+            padding: 15px 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .header-left h1 { 
+            font-size: 1.7rem; 
+            margin-bottom: 5px; 
+            font-weight: 700; 
+        }
+        .header-left .subtitle { 
+            font-size: 0.95rem; 
+            opacity: 0.9; 
+        }
+        .header-info { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-end; 
+            gap: 10px; 
+        }
+        .info-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+        .info-item span { 
+            font-weight: 600; 
+            font-size: 1.05rem; 
+        }
+        
+        .turn-controls { 
+            padding: 10px 25px; 
+            background: #f8fafc; 
+            border-bottom: 1px solid #e2e8f0; 
+            text-align: center; 
+            font-weight: 600;
+            color: #1A355C;
+        }
+        .controls { 
+            padding: 12px 25px; 
+            background: #f1f5f9; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid #e2e8f0; 
+            gap: 15px; 
+        }
+        .search-box { 
+            flex: 1; 
+            max-width: 400px; 
+            position: relative;
+        }
+        .search-box input { 
+            padding: 10px 14px; 
+            border: 2px solid #1A355C; 
+            border-radius: 8px; 
+            width: 100%; 
+            font-size: 0.95rem; 
+            background-color: #e3f2fd; 
+            color: #1A355C; 
+            font-weight: bold; 
+        }
+        .search-box input:focus { 
+            outline: none; 
+            border-color: #1A355C; 
+            box-shadow: 0 0 0 3px rgba(26,53,92,0.1); 
+        }
+        
+        /* Botão de limpar busca */
+        .clear-search {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #7D1A1A;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: auto;
+            display: none;
+        }
+        
+        .btn-edit { 
+            background-color: #1A355C; 
+            color: white; 
+            padding: 10px 16px; 
+            font-size: 0.85rem; 
+            border-radius: 8px;
+        }
+        
+        /* Botão Fechar Turno menor no canto direito */
+        .btn-close-shift { 
+            background-color: #7D1A1A; 
+            color: white; 
+            font-weight: 700; 
+            padding: 8px 16px; 
+            font-size: 0.8rem; 
+            border-radius: 6px;
+            width: auto;
+            margin: 0;
+        }
+        .btn-close-shift:hover { 
+            background-color: #5C1010; 
+        }
+        
+        .main-content { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative;
+        }
+        .table-container { 
+            flex: 1; 
+            overflow: auto; 
+            border-bottom: 2px solid #e2e8f0;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.85rem; 
+            table-layout: fixed; 
+        }
+        thead { 
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0); 
+            position: sticky; 
+            top: 0; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        th { 
+            padding: 12px 8px; 
+            text-align: center; 
+            font-weight: 700; 
+            color: #1A355C; 
+            border-bottom: 2px solid #cbd5e1; 
+            font-size: 0.9rem; 
+        }
+        td { 
+            padding: 8px 8px; 
+            border-bottom: 1px solid #f1f5f9; 
+        }
+        .product-name { 
+            font-weight: 600; 
+            text-align: left; 
+            padding-left: 12px; 
+        }
+        .numeric { 
+            text-align: center; 
+            font-variant-numeric: tabular-nums; 
+        }
+        
+        .qty-input, .entry-input { 
+            width: 70px; 
+            padding: 8px 10px; 
+            border: 2px solid #1A355C; 
+            border-radius: 6px; 
+            text-align: center; 
+            font-size: 0.85rem; 
+            margin: 0 auto; 
+            display: block; 
+            background-color: #e3f2fd; 
+            color: #1A355C; 
+            font-weight: bold;
+        }
+        .qty-input:focus, .entry-input:focus { 
+            outline: none; 
+            border-color: #1A355C; 
+            box-shadow: 0 0 0 2px rgba(26,53,92,0.1); 
+            background: #f0f9ff; 
+        }
+        
+        .sale-controls { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            min-width: 150px; 
+            margin: 0 auto; 
+            padding: 0 10px; 
+        }
+        .sale-btn { 
+            width: 30px; 
+            height: 30px; 
+            padding: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            border: none; 
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .sale-plus { 
+            background-color: #1A355C; 
+            color: white; 
+        }
+        .sale-plus:hover { 
+            background-color: #0F203A; 
+        }
+        .sale-minus { 
+            background-color: #7D1A1A; 
+            color: white; 
+        }
+        .sale-minus:hover { 
+            background-color: #5C1010; 
+        }
+        .sale-qty { 
+            min-width: 40px; 
+            text-align: center; 
+            font-weight: 700; 
+            padding: 4px 8px; 
+        }
+        .sale-total { 
+            font-weight: 700; 
+            color: #1A355C; 
+            margin-left: 12px; 
+        }
+        
+        /* Área do Total de Vendas melhorada */
+        .sales-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 25px;
+            background: #FFF176;
+            border-top: 3px solid #FFEB3B;
+            margin-top: 0;
+        }
+        
+        .total-vendas { 
+            font-weight: 700; 
+            color: #5D4037;
+            font-size: 1.1rem;
+        }
+        
+        .total-value {
+            font-weight: 700;
+            color: #1A355C;
+            font-size: 1.3rem;
+        }
+        
+        footer { 
+            padding: 12px 25px; 
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 0.85rem; 
+            color: #64748b; 
+        }
+        
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .print-header { display: none; }
+        
+        .col-produto { width: 28%; } 
+        .col-inicial { width: 12%; } 
+        .col-valor { width: 10%; }
+        .col-entrada { width: 12%; } 
+        .col-vendidos { width: 12%; } 
+        .col-estoque { width: 12%; } 
+        .col-vendas { width: 14%; }
+
+        /* Estilos para o modal de edição de produtos */
+        .edit-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .edit-search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .edit-search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #1A355C;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .sort-btn {
+            padding: 6px 12px;
+            border: 1px solid #1A355C;
+            background: white;
+            color: #1A355C;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .sort-btn.active {
+            background: #1A355C;
+            color: white;
+        }
+
+        /* Modal sobreposto para edição de produto */
+        .overlay-modal {
+            z-index: 2000;
+        }
+        
+        /* Estilos para impressão */
+        @media print {
+            @page {
+                margin: 0.5cm;
+            }
+            
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                font-size: 12px !important;
+            }
+            .container { 
+                box-shadow: none !important; 
+                border-radius: 0 !important; 
+                width: 100% !important; 
+                height: auto !important; 
+                min-height: auto !important; 
+                max-width: none !important; 
+                max-height: none !important; 
+            }
+            .controls, .turn-controls, .btn-close-shift, footer, .sale-controls, 
+            header, .header-info, .header-left { 
+                display: none !important; 
+            }
+            
+            .qty-input, .entry-input { 
+                border: none !important; 
+                background: transparent !important; 
+                font-size: 10px !important;
+            }
+            
+            /* Cabeçalho de impressão simples */
+            .print-header { 
+                display: flex !important; 
+                justify-content: flex-end !important; 
+                align-items: flex-start !important; 
+                gap: 15px !important; 
+                margin-bottom: 10px !important; 
+                font-size: 10px !important; 
+                padding: 0 8px !important;
+                page-break-inside: avoid !important;
+            }
+            .print-header div { 
+                display: flex; 
+                flex-direction: column; 
+                align-items: flex-start; 
+                line-height: 1.2 !important; 
+            }
+            .print-header strong { 
+                font-size: 9px !important; 
+                margin-bottom: 2px !important; 
+                color: #1A355C !important;
+            }
+            .print-header span { 
+                font-size: 10px !important; 
+                font-weight: 600 !important;
+            }
+            
+            .sales-summary { 
+                display: flex !important; 
+                background: #FFF176 !important; 
+                border-top: 1px solid #FFEB3B !important; 
+                margin-top: 10px !important; 
+                padding: 8px 15px !important; 
+                font-size: 11px !important; 
+                margin-bottom: 0 !important;
+                page-break-inside: avoid !important;
+            }
+            
+            table { 
+                font-size: 10px !important; 
+                margin-top: 0 !important; 
+                page-break-inside: avoid !important;
+            }
+            th, td { 
+                padding: 3px 2px !important; 
+                line-height: 1.2 !important; 
+                border-bottom: 0.5px solid #e2e8f0 !important; 
+                font-size: 10px !important;
+            }
+            
+            thead th {
+                font-size: 9px !important;
+                padding: 4px 2px !important;
+                font-weight: 700 !important;
+                color: #1A355C !important;
+            }
+            
+            .product-name {
+                font-size: 10px !important;
+                padding-left: 3px !important;
+            }
+
+            /* Uniformizar tamanho dos números na impressão */
+            .numeric, .qty-input, .entry-input, .sale-qty, .sale-total {
+                font-size: 10px !important;
+                font-family: 'Courier New', monospace !important;
+            }
+            
+            .col-vendas { display: none !important; }
+            .col-produto { width: 42% !important; }
+            .col-inicial { width: 9% !important; }
+            .col-valor { width: 9% !important; }
+            .col-entrada { width: 9% !important; }
+            .col-vendidos { width: 9% !important; }
+            .col-estoque { width: 9% !important; }
+            
+            tbody tr { 
+                page-break-inside: avoid !important; 
+                height: 14px !important; 
+            }
+            .table-container { 
+                overflow: visible !important; 
+                height: auto !important; 
+            }
+            
+            * { 
+                margin: 0 !important; 
+                padding: 0 !important; 
+            }
+            
+            /* Remove qualquer data/hora do navegador */
+            .date-time, .url, .page-title {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login/Cadastro Centralizada -->
+    <div class="auth-wrapper" id="auth-container">
+        <div class="login-container">
+            <img src="logo.png" alt="Logo Posto Picoró" class="login-logo" />
+            
+            <!-- Formulário de Login -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Código de Acesso:</label>
+                    <input type="password" id="login-code" required placeholder="Digite seu código de acesso" maxlength="6">
+                </div>
+                <button type="submit" class="btn-login">ACESSAR SISTEMA</button>
+            </form>
+            
+            <!-- Formulário de Cadastro (inicialmente oculto) -->
+            <form id="register-form" style="display: none;">
+                <div class="form-group">
+                    <label>Nome do Frentista Caixa:</label>
+                    <input type="text" id="register-name" required placeholder="Digite seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label>Código de Acesso (mínimo 4 dígitos):</label>
+                    <input type="password" id="register-code" required placeholder="Crie um código com 4+ dígitos" minlength="4" maxlength="6">
+                </div>
+                <button type="submit" class="btn-register">CADASTRAR</button>
+            </form>
+            
+            <div class="toggle-forms">
+                <button id="toggle-auth">Não tem cadastro? Clique aqui</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para seleção de data e turno -->
+    <div class="modal" id="turn-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Selecionar Data e Turno</h2>
+                <span class="close" id="close-turn-modal">×</span>
+            </div>
+            <form id="turn-form">
+                <div class="form-group">
+                    <label>Data:</label>
+                    <input type="date" id="session-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Turno:</label>
+                    <div class="turn-selection">
+                        <button type="button" class="turn-btn" data-turn="1">TURNO 1</button>
+                        <button type="button" class="turn-btn" data-turn="2">TURNO 2</button>
+                        <button type="button" class="turn-btn" data-turn="3">TURNO 3</button>
+                        <button type="button" class="turn-btn" data-turn="4">TURNO 4</button>
+                    </div>
+                    <input type="hidden" id="session-turn" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">INICIAR SISTEMA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para autenticação de administrador -->
+    <div class="modal" id="admin-auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Acesso de Administrador</h2>
+                <span class="close" id="close-admin-modal">×</span>
+            </div>
+            <form id="admin-auth-form">
+                <div class="form-group">
+                    <label>Código de Administrador:</label>
+                    <input type="password" id="admin-code" required placeholder="Digite o código de administrador" maxlength="6">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancel-admin">Cancelar</button>
+                    <button type="submit" class="btn-save">Validar Acesso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Sistema Principal (inicialmente oculto) -->
+    <div class="container" id="main-container">
+        <!-- Cabeçalho de impressão - agora será exibido na impressão -->
+        <div class="print-header">
+            <div><strong>Data:</strong><span id="print-date">--/--/----</span></div>
+            <div><strong>Frentista:</strong><span id="print-frentista">--</span></div>
+            <div><strong>Turno:</strong><span id="print-turno">--</span></div>
+        </div>
+        
+        <header>
+            <div class="header-left">
+                <h1>Posto Picoró</h1>
+                <div class="subtitle">Controle de Lubrificantes</div>
+            </div>
+            <div class="header-info">
+                <div class="info-item"><label>DATA:</label><span id="current-date">--/--/----</span></div>
+                <div class="info-item"><label>FRENTISTA CAIXA:</label><span id="frentista-display">--</span></div>
+            </div>
+        </header>
+        
+        <div class="turn-controls">TURNO: <span id="turn-display">--</span></div>
+        
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search" placeholder="Buscar produto...">
+                <button class="clear-search" id="clear-search" title="Limpar busca">✕</button>
+            </div>
+            <div class="buttons">
+                <button class="btn-edit" id="edit-products">✏️ Editar Produtos</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="table-container">
+                <table id="products-table">
+                    <thead>
+                        <tr>
+                            <th class="col-produto" style="text-align: left;">PRODUTO</th>
+                            <th class="col-inicial">QTD INICIAL</th>
+                            <th class="col-valor">VALOR (R$)</th>
+                            <th class="col-entrada">ENTRADA</th>
+                            <th class="col-vendidos">QTD VENDIDA</th>
+                            <th class="col-estoque">ESTOQUE FINAL</th>
+                            <th class="col-vendas">VENDAS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+            
+            <!-- Área do Total de Vendas melhorada -->
+            <div class="sales-summary">
+                <div class="total-vendas">TOTAL DE VENDAS:</div>
+                <div class="total-value" id="total-sales">R$ 0,00</div>
+            </div>
+        </div>
+        
+        <footer>
+            <span>Sistema de Controle - Posto Picoró</span>
+            <div class="footer-right">
+                <button class="btn-close-shift" id="close-shift">📄 Fechar Turno</button>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modal para edição de produtos (sobreposto) -->
+    <div class="modal overlay-modal" id="product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Adicionar Lubrificante</h2>
+                <span class="close" id="close-modal">×</span>
+            </div>
+            <form id="product-form">
+                <div class="form-group">
+                    <label>Nome do Produto:</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Valor (R$):</label>
+                    <input type="number" id="product-value" step="0.01" min="0" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancel-form">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Produtos</h2>
+                <span class="close" id="close-edit-modal">×</span>
+            </div>
+            
+            <!-- Controles de busca e ordenação -->
+            <div class="edit-controls">
+                <div class="edit-search-box">
+                    <input type="text" id="edit-search" placeholder="Buscar produto...">
+                </div>
+                <div class="sort-controls">
+                    <button class="sort-btn" data-sort="name">Nome A-Z</button>
+                    <button class="sort-btn" data-sort="value">Valor</button>
+                </div>
+            </div>
+            
+            <div class="table-container" style="max-height: 350px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">PRODUTO</th>
+                            <th>VALOR (R$)</th>
+                            <th>AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody id="edit-table-body"></tbody>
+                </table>
+            </div>
+            <div class="form-actions" style="margin-top: 20px;">
+                <button type="button" class="btn-cancel" id="cancel-edit">Fechar</button>
+                <button type="button" class="btn-add" id="add-new-product">Adicionar Novo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados iniciais
+        const initialProducts = [
+            { name: "ADITIVO RADIADOR ROOL TECH", value: 16.50 }, { name: "DISCO TACÓGRAFO", value: 48.00 },
+            { name: "LUBRAX ESSENTIAL 2T 200ml (VERDE)", value: 11.00 }, { name: "LUBRAX ESSENTIAL 2T 500ml (VERDE)", value: 23.00 },
+            { name: "LUBRAX ESSENTIAL 2T FC 200ml (AMARELO)", value: 16.00 }, { name: "LUBRAX ESSENTIAL 2T FC 500ml (AMARELO)", value: 31.00 },
+            { name: "FLUIDO DE FREIO HI TECH DOT 3 200ml", value: 12.00 }, { name: "FLUIDO DE FREIO HI TECH DOT 4 200ml", value: 12.00 },
+            { name: "STIHL", value: 65.00 }, { name: "SPRINT F900 10W40 4T", value: 42.00 }, { name: "SPRINTA F500 10W30", value: 35.00 },
+            { name: "SPRINTA F300 20W50", value: 30.00 }, { name: "URANIA 15W40 1 LITRO", value: 45.00 }, { name: "URANIA 15W40 4 LITROS", value: 125.00 },
+            { name: "KARTER TASA SUFIXO A", value: 28.00 }, { name: "SYNTIUM 800 10W40", value: 50.00 }, { name: "SYNTIUM 20W50", value: 28.00 },
+            { name: "SELENIA PERFORM 5W40", value: 43.00 }, { name: "SELENIA 5W30", value: 36.00 }, { name: "SELENIA K", value: 32.00 },
+            { name: "BARDAPIL MAX 200ml", value: 25.00 }, { name: "GÁS", value: 119.00 }, { name: "GÁS CASCO", value: 200.00 }
+        ];
+
+        // Usuários administradores
+        const adminUsers = [
+            { name: "Matheus Ávila", code: "0112" },
+            { name: "Vinicius", code: "2010" },
+            { name: "Daniel", code: "1012" }
+        ];
+
+        let users = [...adminUsers];
+        let products = [...initialProducts];
+        let currentEditingIndex = -1;
+        let initialQuantities = {};
+        let entryQuantities = {};
+        let salesData = {};
+        let sessionData = {};
+        let currentUser = null;
+        let currentSearchTerm = '';
+        let currentSort = 'name';
+        let editSearchTerm = '';
+        let isEditSessionActive = false;
+        
+        // Funções utilitárias
+        const formatCurrency = value => !value && value !== 0 ? '' : parseFloat(value).toFixed(2).replace('.', ',');
+        
+        const calculateFinalStock = (initialQty, entryQty, salesQty) => {
+            if (!initialQty && initialQty !== 0 && !entryQty && entryQty !== 0) return '';
+            return Math.max(0, (parseInt(initialQty) || 0) + (parseInt(entryQty) || 0) - (parseInt(salesQty) || 0));
+        };
+
+        // Função para obter data atual do Brasil
+        function getBrazilianDate() {
+            const now = new Date();
+            // Ajusta para o fuso horário do Brasil (UTC-3)
+            const offset = -3 * 60; // UTC-3 em minutos
+            const brazilTime = new Date(now.getTime() + (offset - now.getTimezoneOffset()) * 60000);
+            return brazilTime.toISOString().split('T')[0];
+        }
+
+        // Função para gerar e baixar relatório em PDF
+        function generateAndDownloadReport() {
+            // Primeiro, abre a impressão
+            window.print();
+            
+            // Depois de um pequeno delay, gera o PDF para download
+            setTimeout(() => {
+                // Cria um elemento HTML para o relatório
+                const reportContent = generateReportContent();
+                
+                // Cria um blob com o conteúdo
+                const blob = new Blob([reportContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                // Cria um link para download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Relatorio_Turno_${sessionData.turn}_${sessionData.date.replace(/-/g, '')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Limpa
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            }, 1000);
+        }
+
+        // Função para gerar o conteúdo do relatório
+        function generateReportContent() {
+            const totalVendas = calculateTotalSales();
+            const dateObj = new Date(sessionData.date + 'T00:00:00');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            const formattedDate = `${day}/${month}/${year}`;
+            
+            let tableContent = '';
+            products.forEach(product => {
+                const productId = product.name.replace(/\s+/g, '_').toLowerCase();
+                const initialQty = initialQuantities[productId] || 0;
+                const entryQty = entryQuantities[productId] || 0;
+                const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
+                const saleTotal = saleInfo.quantity * product.value;
+                const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
+                
+                tableContent += `
+                    <tr>
+                        <td style="text-align: left; padding: 5px; border-bottom: 1px solid #ddd;">${product.name}</td>
+                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${initialQty}</td>
+                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">R$ ${formatCurrency(product.value)}</td>
+                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${entryQty}</td>
+                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${saleInfo.quantity}</td>
+                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${finalStock}</td>
+                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">R$ ${formatCurrency(saleTotal)}</td>
+                    </tr>
+                `;
+            });
+            
+            return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Turno ${sessionData.turn} - ${formattedDate}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .header h1 { color: #1A355C; margin: 0; }
+        .info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .info div { flex: 1; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th { background-color: #1A355C; color: white; padding: 10px; text-align: center; }
+        td { padding: 8px; border-bottom: 1px solid #ddd; }
+        .summary { background-color: #FFF176; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em; border: 2px solid #FFEB3B; }
+        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Posto Picoró - Relatório de Turno</h1>
+    </div>
+    
+    <div class="info">
+        <div><strong>Data:</strong> ${formattedDate}</div>
+        <div><strong>Frentista:</strong> ${sessionData.frentistaName}</div>
+        <div><strong>Turno:</strong> ${sessionData.turn}</div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>PRODUTO</th>
+                <th>QTD INICIAL</th>
+                <th>VALOR (R$)</th>
+                <th>ENTRADA</th>
+                <th>QTD VENDIDA</th>
+                <th>ESTOQUE FINAL</th>
+                <th>TOTAL VENDAS</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${tableContent}
+        </tbody>
+    </table>
+    
+    <div class="summary">
+        TOTAL DE VENDAS: R$ ${formatCurrency(totalVendas)}
+    </div>
+    
+    <div class="footer">
+        Relatório gerado em ${new Date().toLocaleString('pt-BR')} | Sistema de Controle Posto Picoró
+    </div>
+</body>
+</html>
+            `;
+        }
+
+        // Sistema de autenticação
+        function toggleAuthForms() {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const toggleBtn = document.getElementById('toggle-auth');
+            
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                toggleBtn.textContent = 'Não tem cadastro? Clique aqui';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                toggleBtn.textContent = 'Já tem cadastro? Fazer login';
+            }
+        }
+
+        function registerUser(name, code) {
+            // Verifica se o código já existe
+            if (users.some(user => user.code === code)) {
+                alert('Este código de acesso já está em uso. Por favor, escolha outro.');
+                return false;
+            }
+            
+            // Adiciona o novo usuário
+            users.push({ name, code });
+            alert('Cadastro realizado com sucesso! Agora faça login com seu código.');
+            toggleAuthForms();
+            return true;
+        }
+
+        function loginUser(code) {
+            const user = users.find(user => user.code === code);
+            if (user) {
+                currentUser = user;
+                document.getElementById('turn-modal').style.display = 'flex';
+                return true;
+            } else {
+                alert('Código de acesso inválido. Tente novamente.');
+                return false;
+            }
+        }
+
+        // Função para autenticar administrador
+        function authenticateAdmin(code) {
+            const admin = adminUsers.find(admin => admin.code === code);
+            if (admin) {
+                isEditSessionActive = true;
+                return true;
+            } else {
+                alert('Código de administrador inválido. Tente novamente.');
+                return false;
+            }
+        }
+
+        // Função para verificar se precisa autenticar como admin
+        function checkAdminAccess() {
+            // Se já está em uma sessão de edição, não precisa autenticar novamente
+            if (isEditSessionActive) {
+                return Promise.resolve(true);
+            }
+            
+            document.getElementById('admin-auth-modal').style.display = 'flex';
+            document.getElementById('admin-code').focus();
+            document.getElementById('admin-code').value = '';
+            return new Promise((resolve) => {
+                const adminForm = document.getElementById('admin-auth-form');
+                const handleSubmit = (e) => {
+                    e.preventDefault();
+                    const code = document.getElementById('admin-code').value;
+                    if (code.length < 4) {
+                        alert('O código de administrador deve ter pelo menos 4 dígitos.');
+                        return;
+                    }
+                    if (authenticateAdmin(code)) {
+                        document.getElementById('admin-auth-modal').style.display = 'none';
+                        adminForm.removeEventListener('submit', handleSubmit);
+                        resolve(true);
+                    }
+                };
+                adminForm.addEventListener('submit', handleSubmit);
+                
+                // Cancelar autenticação
+                const cancelAuth = () => {
+                    document.getElementById('admin-auth-modal').style.display = 'none';
+                    adminForm.removeEventListener('submit', handleSubmit);
+                    resolve(false);
+                };
+                
+                document.getElementById('close-admin-modal').addEventListener('click', cancelAuth);
+                document.getElementById('cancel-admin').addEventListener('click', cancelAuth);
+            });
+        }
+
+        // Função para selecionar o turno
+        function selecionarTurno(turno) {
+            document.querySelectorAll('.turn-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const btnSelecionado = document.querySelector(`.turn-btn[data-turn="${turno}"]`);
+            btnSelecionado.classList.add('active');
+            
+            document.getElementById('session-turn').value = turno;
+        }
+
+        // Inicialização do sistema principal
+        function initializeSystem(date, turn) {
+            sessionData = { 
+                frentistaName: currentUser.name, 
+                date: date, 
+                turn: turn 
+            };
+            
+            // Formata a data corretamente
+            const dateObj = new Date(date + 'T00:00:00'); // Garante o fuso horário correto
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            
+            const formattedDate = `${day}/${month}/${year}`;
+            
+            document.getElementById('current-date').textContent = formattedDate;
+            document.getElementById('frentista-display').textContent = currentUser.name;
+            document.getElementById('turn-display').textContent = `Turno ${turn}`;
+            
+            // Atualiza também o cabeçalho de impressão
+            document.getElementById('print-date').textContent = formattedDate;
+            document.getElementById('print-frentista').textContent = currentUser.name;
+            document.getElementById('print-turno').textContent = `Turno ${turn}`;
+            
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('main-container').style.display = 'flex';
+            document.getElementById('turn-modal').style.display = 'none';
+            
+            renderTable();
+            
+            setTimeout(() => {
+                const firstInput = document.querySelector('.qty-input');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+
+        // Função para limpar busca
+        function clearSearch() {
+            document.getElementById('search').value = '';
+            currentSearchTerm = '';
+            document.getElementById('clear-search').style.display = 'none';
+            renderTable();
+        }
+
+        // Função para ordenar produtos
+        function sortProducts(productsToSort, sortType) {
+            const sorted = [...productsToSort];
+            switch(sortType) {
+                case 'name':
+                    return sorted.sort((a, b) => a.name.localeCompare(b.name));
+                case 'value':
+                    return sorted.sort((a, b) => a.value - b.value);
+                default:
+                    return sorted;
+            }
+        }
+
+        // Função para aplicar busca nos produtos de edição
+        function filterEditProducts() {
+            let filtered = products;
+            
+            if (editSearchTerm) {
+                filtered = filtered.filter(product => 
+                    product.name.toLowerCase().includes(editSearchTerm.toLowerCase())
+                );
+            }
+            
+            return sortProducts(filtered, currentSort);
+        }
+
+        // Restante do código do sistema (renderTable, calculateTotalSales, etc.)
+        function calculateTotalSales() {
+            let total = 0;
+            Object.values(salesData).forEach(sale => {
+                if (sale && sale.quantity > 0) {
+                    const product = products.find(p => p.name === sale.productName);
+                    if (product) total += sale.quantity * product.value;
+                }
+            });
+            document.getElementById('total-sales').textContent = `R$ ${formatCurrency(total)}`;
+            return total;
+        }
+
+        function renderTable(filteredProducts = products) {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            // Se há termo de busca, filtra os produtos
+            if (currentSearchTerm) {
+                filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+            }
+            
+            filteredProducts.forEach((product, index) => {
+                const productId = product.name.replace(/\s+/g, '_').toLowerCase();
+                const initialQty = initialQuantities[productId] || '';
+                const entryQty = entryQuantities[productId] || '';
+                const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
+                const saleTotal = saleInfo.quantity * product.value;
+                const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="product-name">${product.name}</td>
+                    <td class="numeric"><input type="number" class="qty-input" data-product="${productId}" value="${initialQty}" placeholder="0" min="0" data-row="${index}"></td>
+                    <td class="numeric">${formatCurrency(product.value)}</td>
+                    <td class="numeric"><input type="number" class="entry-input" data-product="${productId}" value="${entryQty}" placeholder="0" min="0" data-row="${index}"></td>
+                    <td class="numeric">${saleInfo.quantity}</td>
+                    <td class="numeric">${finalStock}</td>
+                    <td class="numeric">
+                        <div class="sale-controls">
+                            <button class="sale-btn sale-minus" data-product="${productId}" data-action="decrease">-</button>
+                            <span class="sale-qty">${saleInfo.quantity}</span>
+                            <button class="sale-btn sale-plus" data-product="${productId}" data-action="increase">+</button>
+                            <span class="sale-total">R$ ${formatCurrency(saleTotal)}</span>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            document.querySelectorAll('.qty-input, .entry-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const productId = this.getAttribute('data-product');
+                    const value = this.value ? parseInt(this.value) : '';
+                    if (this.classList.contains('qty-input')) initialQuantities[productId] = value;
+                    else entryQuantities[productId] = value;
+                    renderTable();
+                });
+                input.addEventListener('keydown', handleTabNavigation);
+            });
+            
+            document.querySelectorAll('.sale-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product');
+                    const action = this.getAttribute('data-action');
+                    const product = products.find(p => p.name.replace(/\s+/g, '_').toLowerCase() === productId);
+                    if (!product) return;
+                    
+                    if (!salesData[productId]) salesData[productId] = { quantity: 0, productName: product.name };
+                    if (action === 'increase') salesData[productId].quantity += 1;
+                    else if (action === 'decrease' && salesData[productId].quantity > 0) salesData[productId].quantity -= 1;
+                    
+                    renderTable();
+                });
+            });
+            
+            calculateTotalSales();
+        }
+
+        function handleTabNavigation(event) {
+            if (event.key === 'Tab') {
+                event.preventDefault();
+                const allInputs = Array.from(document.querySelectorAll('.qty-input'));
+                const currentIndex = allInputs.indexOf(event.target);
+                const nextIndex = currentIndex + 1 >= allInputs.length ? 0 : currentIndex + 1;
+                if (allInputs[nextIndex]) {
+                    allInputs[nextIndex].focus();
+                    allInputs[nextIndex].select();
+                }
+            }
+        }
+
+        async function openProductModal(index = -1) {
+            currentEditingIndex = index;
+            document.getElementById('modal-title').textContent = index === -1 ? 'Adicionar Lubrificante' : 'Editar Lubrificante';
+            if (index !== -1) {
+                const product = products[index];
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-value').value = product.value;
+            } else {
+                document.getElementById('product-form').reset();
+            }
+            document.getElementById('product-modal').style.display = 'flex';
+            document.getElementById('product-name').focus();
+        }
+
+        document.getElementById('product-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const product = {
+                name: document.getElementById('product-name').value,
+                value: parseFloat(document.getElementById('product-value').value)
+            };
+            
+            if (currentEditingIndex === -1) products.push(product);
+            else products[currentEditingIndex] = product;
+            
+            document.getElementById('product-modal').style.display = 'none';
+            renderEditTable();
+            renderTable();
+        });
+
+        function renderEditTable() {
+            const editTableBody = document.getElementById('edit-table-body');
+            editTableBody.innerHTML = '';
+            
+            const filteredProducts = filterEditProducts();
+            
+            filteredProducts.forEach((product, index) => {
+                const originalIndex = products.findIndex(p => p.name === product.name);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td class="numeric">${formatCurrency(product.value)}</td>
+                    <td>
+                        <button class="btn-edit edit-product-btn" data-index="${originalIndex}">Editar</button>
+                        <button class="btn-remove remove-product-btn" data-index="${originalIndex}">Remover</button>
+                    </td>
+                `;
+                editTableBody.appendChild(row);
+            });
+            
+            document.querySelectorAll('.edit-product-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    openProductModal(index);
+                });
+            });
+            
+            document.querySelectorAll('.remove-product-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    if (confirm(`Tem certeza que deseja remover "${products[index].name}"?`)) {
+                        products.splice(index, 1);
+                        renderEditTable();
+                        renderTable();
+                    }
+                });
+            });
+        }
+
+        async function openEditModal() {
+            // Verifica se o usuário está autenticado como admin
+            const isAuthenticated = await checkAdminAccess();
+            if (!isAuthenticated) return;
+            
+            // Reseta estado de busca e ordenação
+            editSearchTerm = '';
+            document.getElementById('edit-search').value = '';
+            currentSort = 'name';
+            
+            // Ativa botão de ordenação padrão
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.sort-btn[data-sort="name"]').classList.add('active');
+            
+            renderEditTable();
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+
+        // Função para finalizar sessão de edição
+        function endEditSession() {
+            isEditSessionActive = false;
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        // Event Listeners
+        document.getElementById('toggle-auth').addEventListener('click', toggleAuthForms);
+
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const code = document.getElementById('login-code').value;
+            if (code.length < 4) {
+                alert('O código de acesso deve ter pelo menos 4 dígitos.');
+                return;
+            }
+            loginUser(code);
+        });
+
+        document.getElementById('register-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const code = document.getElementById('register-code').value;
+            
+            if (name.trim() === '') {
+                alert('Por favor, informe seu nome.');
+                return;
+            }
+            
+            if (code.length < 4) {
+                alert('O código de acesso deve ter pelo menos 4 dígitos.');
+                return;
+            }
+            
+            registerUser(name, code);
+        });
+
+        document.getElementById('turn-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const date = document.getElementById('session-date').value;
+            const turn = document.getElementById('session-turn').value;
+            
+            if (!date || !turn) {
+                alert('Por favor, selecione a data e o turno.');
+                return;
+            }
+            
+            initializeSystem(date, turn);
+        });
+
+        document.querySelectorAll('.turn-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const turno = this.getAttribute('data-turn');
+                selecionarTurno(turno);
+            });
+        });
+
+        document.getElementById('close-turn-modal').addEventListener('click', () => {
+            document.getElementById('turn-modal').style.display = 'none';
+        });
+
+        // Busca de produtos melhorada
+        document.getElementById('search').addEventListener('input', function() {
+            currentSearchTerm = this.value;
+            if (currentSearchTerm) {
+                document.getElementById('clear-search').style.display = 'block';
+            } else {
+                document.getElementById('clear-search').style.display = 'none';
+            }
+            renderTable();
+        });
+
+        // Busca na edição de produtos
+        document.getElementById('edit-search').addEventListener('input', function() {
+            editSearchTerm = this.value;
+            renderEditTable();
+        });
+
+        // Ordenação na edição de produtos
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sortType = this.getAttribute('data-sort');
+                currentSort = sortType;
+                
+                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                renderEditTable();
+            });
+        });
+
+        document.getElementById('clear-search').addEventListener('click', clearSearch);
+
+        // MODIFICAÇÃO AQUI: Agora ao fechar turno, gera relatório e faz download automaticamente
+        document.getElementById('close-shift').addEventListener('click', () => {
+            if (confirm('Deseja fechar o turno e gerar o relatório para impressão?')) {
+                generateAndDownloadReport();
+            }
+        });
+
+        // Event Listeners para modais
+        document.getElementById('edit-products').addEventListener('click', openEditModal);
+        document.getElementById('close-modal').addEventListener('click', () => document.getElementById('product-modal').style.display = 'none');
+        document.getElementById('close-edit-modal').addEventListener('click', endEditSession);
+        document.getElementById('cancel-form').addEventListener('click', () => document.getElementById('product-modal').style.display = 'none');
+        document.getElementById('cancel-edit').addEventListener('click', endEditSession);
+        document.getElementById('add-new-product').addEventListener('click', () => {
+            openProductModal();
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === document.getElementById('product-modal')) document.getElementById('product-modal').style.display = 'none';
+            if (event.target === document.getElementById('edit-modal')) {
+                endEditSession();
+            }
+            if (event.target === document.getElementById('turn-modal')) document.getElementById('turn-modal').style.display = 'none';
+            if (event.target === document.getElementById('admin-auth-modal')) document.getElementById('admin-auth-modal').style.display = 'none';
+        });
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            products = [...initialProducts];
+            initialQuantities = {};
+            entryQuantities = {};
+            salesData = {};
+            sessionData = {};
+            
+            // Define a data atual do Brasil como padrão
+            const dataBrasil = getBrazilianDate();
+            document.getElementById('session-date').value = dataBrasil;
+        });
+    </script>
+</body>
+</html>
