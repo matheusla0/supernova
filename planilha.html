@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lubrificante</title>
+    <title>Lubrificante - Sistema de Turnos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
@@ -627,11 +627,70 @@
                 display: none !important;
             }
         }
+        
+        /* Botões de seleção de turno na tela inicial */
+        .shift-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .shift-btn {
+            padding: 16px 24px;
+            font-size: 16px;
+            border: 2px solid #1A355C;
+            background-color: #fff;
+            color: #1A355C;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .shift-btn:hover {
+            background-color: #1A355C;
+            color: white;
+        }
+        
+        .shift-btn.new-shift {
+            background-color: #1A355C;
+            color: white;
+        }
+        
+        .shift-btn.continue-shift {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .shift-btn.continue-shift:hover {
+            background-color: #388E3C;
+        }
+        
+        /* Modal para continuar turno */
+        .continue-shift-modal {
+            z-index: 1500;
+        }
     </style>
 </head>
 <body>
+    <!-- Tela Inicial com Seleção de Turno -->
+    <div class="auth-wrapper" id="initial-container">
+        <div class="login-container">
+            <img src="logo.png" alt="Logo Posto Picoró" class="login-logo" />
+            
+            <div class="shift-selection">
+                <button class="shift-btn new-shift" id="new-shift-btn">NOVO TURNO</button>
+                <button class="shift-btn continue-shift" id="continue-shift-btn">CONTINUAR TURNO</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Tela de Login/Cadastro Centralizada -->
-    <div class="auth-wrapper" id="auth-container">
+    <div class="auth-wrapper" id="auth-container" style="display: none;">
         <div class="login-container">
             <img src="logo.png" alt="Logo Posto Picoró" class="login-logo" />
             
@@ -660,6 +719,26 @@
             <div class="toggle-forms">
                 <button id="toggle-auth">Não tem cadastro? Clique aqui</button>
             </div>
+        </div>
+    </div>
+    
+    <!-- Modal para continuar turno -->
+    <div class="modal continue-shift-modal" id="continue-shift-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Continuar Turno</h2>
+                <span class="close" id="close-continue-modal">×</span>
+            </div>
+            <form id="continue-shift-form">
+                <div class="form-group">
+                    <label>Código de Acesso:</label>
+                    <input type="password" id="continue-code" required placeholder="Digite seu código de acesso" maxlength="6">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancel-continue">Cancelar</button>
+                    <button type="submit" class="btn-save">Continuar Turno</button>
+                </div>
+            </form>
         </div>
     </div>
     
@@ -859,6 +938,15 @@
             { name: "Daniel", code: "1012" }
         ];
 
+        // Banco de dados usando IndexedDB
+        const DB_NAME = 'PostoPicoroDB';
+        const DB_VERSION = 1;
+        const STORE_USERS = 'users';
+        const STORE_PRODUCTS = 'products';
+        const STORE_SHIFTS = 'shifts';
+        const STORE_ACTIVE_SHIFTS = 'active_shifts';
+
+        let db = null;
         let users = [...adminUsers];
         let products = [...initialProducts];
         let currentEditingIndex = -1;
@@ -871,6 +959,137 @@
         let currentSort = 'name';
         let editSearchTerm = '';
         let isEditSessionActive = false;
+        let isNewShift = true;
+        let currentShiftId = null;
+        
+        // Inicializar banco de dados
+        function initDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => {
+                    console.error('Erro ao abrir banco de dados');
+                    reject(request.error);
+                };
+                
+                request.onsuccess = () => {
+                    db = request.result;
+                    console.log('Banco de dados aberto com sucesso');
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Criar store de usuários
+                    if (!db.objectStoreNames.contains(STORE_USERS)) {
+                        const userStore = db.createObjectStore(STORE_USERS, { keyPath: 'code' });
+                        userStore.createIndex('name', 'name', { unique: false });
+                    }
+                    
+                    // Criar store de produtos
+                    if (!db.objectStoreNames.contains(STORE_PRODUCTS)) {
+                        const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'name' });
+                        productStore.createIndex('value', 'value', { unique: false });
+                    }
+                    
+                    // Criar store de turnos
+                    if (!db.objectStoreNames.contains(STORE_SHIFTS)) {
+                        const shiftStore = db.createObjectStore(STORE_SHIFTS, { keyPath: 'id', autoIncrement: true });
+                        shiftStore.createIndex('userCode', 'userCode', { unique: false });
+                        shiftStore.createIndex('date', 'date', { unique: false });
+                    }
+                    
+                    // Criar store de turnos ativos
+                    if (!db.objectStoreNames.contains(STORE_ACTIVE_SHIFTS)) {
+                        const activeShiftStore = db.createObjectStore(STORE_ACTIVE_SHIFTS, { keyPath: 'userCode' });
+                    }
+                };
+            });
+        }
+        
+        // Funções para manipular o banco de dados
+        function addItem(storeName, item) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.add(item);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        function getItem(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.get(key);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        function getAllItems(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        function updateItem(storeName, item) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put(item);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        function deleteItem(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+        
+        // Carregar dados iniciais no banco
+        async function loadInitialData() {
+            try {
+                // Carregar usuários
+                const existingUsers = await getAllItems(STORE_USERS);
+                if (existingUsers.length === 0) {
+                    for (const user of users) {
+                        await addItem(STORE_USERS, user);
+                    }
+                } else {
+                    users = existingUsers;
+                }
+                
+                // Carregar produtos
+                const existingProducts = await getAllItems(STORE_PRODUCTS);
+                if (existingProducts.length === 0) {
+                    for (const product of products) {
+                        await addItem(STORE_PRODUCTS, product);
+                    }
+                } else {
+                    products = existingProducts;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados iniciais:', error);
+            }
+        }
         
         // Funções utilitárias
         const formatCurrency = value => !value && value !== 0 ? '' : parseFloat(value).toFixed(2).replace('.', ',');
@@ -1025,28 +1244,43 @@
             }
         }
 
-        function registerUser(name, code) {
-            // Verifica se o código já existe
-            if (users.some(user => user.code === code)) {
-                alert('Este código de acesso já está em uso. Por favor, escolha outro.');
+        async function registerUser(name, code) {
+            try {
+                // Verifica se o código já existe
+                const existingUser = await getItem(STORE_USERS, code);
+                if (existingUser) {
+                    alert('Este código de acesso já está em uso. Por favor, escolha outro.');
+                    return false;
+                }
+                
+                // Adiciona o novo usuário
+                const newUser = { name, code };
+                await addItem(STORE_USERS, newUser);
+                users.push(newUser);
+                
+                alert('Cadastro realizado com sucesso! Agora faça login com seu código.');
+                toggleAuthForms();
+                return true;
+            } catch (error) {
+                console.error('Erro ao registrar usuário:', error);
+                alert('Erro ao registrar usuário. Tente novamente.');
                 return false;
             }
-            
-            // Adiciona o novo usuário
-            users.push({ name, code });
-            alert('Cadastro realizado com sucesso! Agora faça login com seu código.');
-            toggleAuthForms();
-            return true;
         }
 
-        function loginUser(code) {
-            const user = users.find(user => user.code === code);
-            if (user) {
-                currentUser = user;
-                document.getElementById('turn-modal').style.display = 'flex';
-                return true;
-            } else {
-                alert('Código de acesso inválido. Tente novamente.');
+        async function loginUser(code) {
+            try {
+                const user = await getItem(STORE_USERS, code);
+                if (user) {
+                    currentUser = user;
+                    return true;
+                } else {
+                    alert('Código de acesso inválido. Tente novamente.');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Erro ao fazer login:', error);
+                alert('Erro ao fazer login. Tente novamente.');
                 return false;
             }
         }
@@ -1114,8 +1348,84 @@
             document.getElementById('session-turn').value = turno;
         }
 
+        // Função para verificar se há turno ativo para o usuário
+        async function checkActiveShift(userCode) {
+            try {
+                const activeShift = await getItem(STORE_ACTIVE_SHIFTS, userCode);
+                return activeShift;
+            } catch (error) {
+                console.error('Erro ao verificar turno ativo:', error);
+                return null;
+            }
+        }
+
+        // Função para salvar turno ativo
+        async function saveActiveShift(shiftData) {
+            try {
+                await updateItem(STORE_ACTIVE_SHIFTS, shiftData);
+            } catch (error) {
+                console.error('Erro ao salvar turno ativo:', error);
+            }
+        }
+
+        // Função para remover turno ativo
+        async function removeActiveShift(userCode) {
+            try {
+                await deleteItem(STORE_ACTIVE_SHIFTS, userCode);
+            return true;
+            } catch (error) {
+                console.error('Erro ao remover turno ativo:', error);
+                return false;
+            }
+        }
+
+        // Função para salvar dados do turno
+        async function saveShiftData() {
+            try {
+                const shiftData = {
+                    id: currentShiftId,
+                    userCode: currentUser.code,
+                    date: sessionData.date,
+                    turn: sessionData.turn,
+                    frentistaName: currentUser.name,
+                    initialQuantities: { ...initialQuantities },
+                    entryQuantities: { ...entryQuantities },
+                    salesData: { ...salesData },
+                    timestamp: new Date().getTime()
+                };
+                
+                await updateItem(STORE_SHIFTS, shiftData);
+                await saveActiveShift({
+                    userCode: currentUser.code,
+                    shiftId: currentShiftId
+                });
+                
+                return true;
+            } catch (error) {
+                console.error('Erro ao salvar dados do turno:', error);
+                return false;
+            }
+        }
+
+        // Função para carregar dados do turno
+        async function loadShiftData(shiftId) {
+            try {
+                const shiftData = await getItem(STORE_SHIFTS, shiftId);
+                if (shiftData) {
+                    initialQuantities = { ...shiftData.initialQuantities };
+                    entryQuantities = { ...shiftData.entryQuantities };
+                    salesData = { ...shiftData.salesData };
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Erro ao carregar dados do turno:', error);
+                return false;
+            }
+        }
+
         // Inicialização do sistema principal
-        function initializeSystem(date, turn) {
+        async function initializeSystem(date, turn, shiftId = null) {
             sessionData = { 
                 frentistaName: currentUser.name, 
                 date: date, 
@@ -1139,9 +1449,23 @@
             document.getElementById('print-frentista').textContent = currentUser.name;
             document.getElementById('print-turno').textContent = `Turno ${turn}`;
             
+            document.getElementById('initial-container').style.display = 'none';
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('main-container').style.display = 'flex';
             document.getElementById('turn-modal').style.display = 'none';
+            
+            // Se é um novo turno, cria um ID único
+            if (isNewShift) {
+                currentShiftId = Date.now();
+                
+                // Salva o turno inicial
+                await saveShiftData();
+            } else {
+                currentShiftId = shiftId;
+                
+                // Carrega os dados do turno
+                await loadShiftData(shiftId);
+            }
             
             renderTable();
             
@@ -1149,6 +1473,11 @@
                 const firstInput = document.querySelector('.qty-input');
                 if (firstInput) firstInput.focus();
             }, 100);
+            
+            // Salva automaticamente a cada 30 segundos
+            setInterval(async () => {
+                await saveShiftData();
+            }, 30000);
         }
 
         // Função para limpar busca
@@ -1243,6 +1572,9 @@
                     const value = this.value ? parseInt(this.value) : '';
                     if (this.classList.contains('qty-input')) initialQuantities[productId] = value;
                     else entryQuantities[productId] = value;
+                    
+                    // Salva automaticamente
+                    saveShiftData();
                     renderTable();
                 });
                 input.addEventListener('keydown', handleTabNavigation);
@@ -1259,6 +1591,8 @@
                     if (action === 'increase') salesData[productId].quantity += 1;
                     else if (action === 'decrease' && salesData[productId].quantity > 0) salesData[productId].quantity -= 1;
                     
+                    // Salva automaticamente
+                    saveShiftData();
                     renderTable();
                 });
             });
@@ -1293,15 +1627,20 @@
             document.getElementById('product-name').focus();
         }
 
-        document.getElementById('product-form').addEventListener('submit', function(event) {
+        document.getElementById('product-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const product = {
                 name: document.getElementById('product-name').value,
                 value: parseFloat(document.getElementById('product-value').value)
             };
             
-            if (currentEditingIndex === -1) products.push(product);
-            else products[currentEditingIndex] = product;
+            if (currentEditingIndex === -1) {
+                products.push(product);
+                await addItem(STORE_PRODUCTS, product);
+            } else {
+                products[currentEditingIndex] = product;
+                await updateItem(STORE_PRODUCTS, product);
+            }
             
             document.getElementById('product-modal').style.display = 'none';
             renderEditTable();
@@ -1336,9 +1675,10 @@
             });
             
             document.querySelectorAll('.remove-product-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', async (e) => {
                     const index = parseInt(e.target.getAttribute('data-index'));
                     if (confirm(`Tem certeza que deseja remover "${products[index].name}"?`)) {
+                        await deleteItem(STORE_PRODUCTS, products[index].name);
                         products.splice(index, 1);
                         renderEditTable();
                         renderTable();
@@ -1376,17 +1716,20 @@
         // Event Listeners
         document.getElementById('toggle-auth').addEventListener('click', toggleAuthForms);
 
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const code = document.getElementById('login-code').value;
             if (code.length < 4) {
                 alert('O código de acesso deve ter pelo menos 4 dígitos.');
                 return;
             }
-            loginUser(code);
+            const success = await loginUser(code);
+            if (success) {
+                document.getElementById('turn-modal').style.display = 'flex';
+            }
         });
 
-        document.getElementById('register-form').addEventListener('submit', function(event) {
+        document.getElementById('register-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const name = document.getElementById('register-name').value;
             const code = document.getElementById('register-code').value;
@@ -1401,10 +1744,10 @@
                 return;
             }
             
-            registerUser(name, code);
+            await registerUser(name, code);
         });
 
-        document.getElementById('turn-form').addEventListener('submit', function(event) {
+        document.getElementById('turn-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const date = document.getElementById('session-date').value;
             const turn = document.getElementById('session-turn').value;
@@ -1414,7 +1757,7 @@
                 return;
             }
             
-            initializeSystem(date, turn);
+            await initializeSystem(date, turn);
         });
 
         document.querySelectorAll('.turn-btn').forEach(btn => {
@@ -1426,6 +1769,59 @@
 
         document.getElementById('close-turn-modal').addEventListener('click', () => {
             document.getElementById('turn-modal').style.display = 'none';
+        });
+
+        // Botões de seleção de turno na tela inicial
+        document.getElementById('new-shift-btn').addEventListener('click', function() {
+            isNewShift = true;
+            document.getElementById('initial-container').style.display = 'none';
+            document.getElementById('auth-container').style.display = 'flex';
+        });
+
+        document.getElementById('continue-shift-btn').addEventListener('click', function() {
+            document.getElementById('continue-shift-modal').style.display = 'flex';
+            document.getElementById('continue-code').focus();
+        });
+
+        document.getElementById('continue-shift-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const code = document.getElementById('continue-code').value;
+            
+            if (code.length < 4) {
+                alert('O código de acesso deve ter pelo menos 4 dígitos.');
+                return;
+            }
+            
+            const success = await loginUser(code);
+            if (success) {
+                // Verifica se há turno ativo para este usuário
+                const activeShift = await checkActiveShift(code);
+                if (activeShift) {
+                    isNewShift = false;
+                    document.getElementById('continue-shift-modal').style.display = 'none';
+                    
+                    // Carrega os dados do turno
+                    const shiftData = await getItem(STORE_SHIFTS, activeShift.shiftId);
+                    if (shiftData) {
+                        await initializeSystem(shiftData.date, shiftData.turn, activeShift.shiftId);
+                    } else {
+                        alert('Erro ao carregar dados do turno. Iniciando novo turno.');
+                        document.getElementById('turn-modal').style.display = 'flex';
+                    }
+                } else {
+                    alert('Nenhum turno ativo encontrado para este usuário. Inicie um novo turno.');
+                    document.getElementById('continue-shift-modal').style.display = 'none';
+                    document.getElementById('turn-modal').style.display = 'flex';
+                }
+            }
+        });
+
+        document.getElementById('close-continue-modal').addEventListener('click', () => {
+            document.getElementById('continue-shift-modal').style.display = 'none';
+        });
+
+        document.getElementById('cancel-continue').addEventListener('click', () => {
+            document.getElementById('continue-shift-modal').style.display = 'none';
         });
 
         // Busca de produtos melhorada
@@ -1460,10 +1856,26 @@
 
         document.getElementById('clear-search').addEventListener('click', clearSearch);
 
-        // MODIFICAÇÃO AQUI: Agora ao fechar turno, gera relatório e faz download automaticamente
-        document.getElementById('close-shift').addEventListener('click', () => {
-            if (confirm('Deseja fechar o turno e gerar o relatório para impressão?')) {
+        // MODIFICAÇÃO AQUI: Agora ao fechar turno, gera relatório, remove turno ativo e zera dados
+        document.getElementById('close-shift').addEventListener('click', async () => {
+            if (confirm('ATENÇÃO: Ao fechar o turno, todas as informações serão zeradas e não será possível continuar este turno. Deseja realmente fechar o turno e gerar o relatório?')) {
+                // Gera relatório
                 generateAndDownloadReport();
+                
+                // Remove turno ativo
+                await removeActiveShift(currentUser.code);
+                
+                // Zera dados locais
+                initialQuantities = {};
+                entryQuantities = {};
+                salesData = {};
+                currentShiftId = null;
+                
+                // Volta para tela inicial
+                document.getElementById('main-container').style.display = 'none';
+                document.getElementById('initial-container').style.display = 'flex';
+                
+                alert('Turno fechado com sucesso! Todas as informações foram zeradas.');
             }
         });
 
@@ -1484,11 +1896,18 @@
             }
             if (event.target === document.getElementById('turn-modal')) document.getElementById('turn-modal').style.display = 'none';
             if (event.target === document.getElementById('admin-auth-modal')) document.getElementById('admin-auth-modal').style.display = 'none';
+            if (event.target === document.getElementById('continue-shift-modal')) document.getElementById('continue-shift-modal').style.display = 'none';
         });
 
         // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            products = [...initialProducts];
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Inicializa o banco de dados
+            await initDatabase();
+            await loadInitialData();
+            
+            products = await getAllItems(STORE_PRODUCTS);
+            users = await getAllItems(STORE_USERS);
+            
             initialQuantities = {};
             entryQuantities = {};
             salesData = {};
@@ -1500,5 +1919,4 @@
         });
     </script>
 </body>
-
 </html>
