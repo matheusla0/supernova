@@ -674,6 +674,32 @@
         .continue-shift-modal {
             z-index: 1500;
         }
+        
+        /* Botões de ação no modal de edição */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-cancel {
+            background-color: #ccc;
+            color: #333;
+            width: auto;
+            padding: 8px 16px;
+        }
+        
+        .btn-save, .btn-add {
+            background-color: #1A355C;
+            color: white;
+            width: auto;
+            padding: 8px 16px;
+        }
+        
+        .btn-add {
+            background-color: #4CAF50;
+        }
     </style>
 </head>
 <body>
@@ -918,17 +944,32 @@
     </div>
 
     <script>
-        // Dados iniciais
+        // Dados iniciais - ADICIONADO O NOVO LUBRIFICANTE
         const initialProducts = [
-            { name: "ADITIVO RADIADOR ROOL TECH", value: 16.50 }, { name: "DISCO TACÓGRAFO", value: 48.00 },
-            { name: "LUBRAX ESSENTIAL 2T 200ml (VERDE)", value: 11.00 }, { name: "LUBRAX ESSENTIAL 2T 500ml (VERDE)", value: 23.00 },
-            { name: "LUBRAX ESSENTIAL 2T FC 200ml (AMARELO)", value: 16.00 }, { name: "LUBRAX ESSENTIAL 2T FC 500ml (AMARELO)", value: 31.00 },
-            { name: "FLUIDO DE FREIO HI TECH DOT 3 200ml", value: 12.00 }, { name: "FLUIDO DE FREIO HI TECH DOT 4 200ml", value: 12.00 },
-            { name: "STIHL", value: 65.00 }, { name: "SPRINT F900 10W40 4T", value: 42.00 }, { name: "SPRINTA F500 10W30", value: 35.00 },
-            { name: "SPRINTA F300 20W50", value: 30.00 }, { name: "URANIA 15W40 1 LITRO", value: 45.00 }, { name: "URANIA 15W40 4 LITROS", value: 125.00 },
-            { name: "KARTER TASA SUFIXO A", value: 28.00 }, { name: "SYNTIUM 800 10W40", value: 50.00 }, { name: "SYNTIUM 20W50", value: 28.00 },
-            { name: "SELENIA PERFORM 5W40", value: 43.00 }, { name: "SELENIA 5W30", value: 36.00 }, { name: "SELENIA K", value: 32.00 },
-            { name: "BARDAHL MAX 200ml", value: 25.00 }, { name: "GÁS", value: 119.00 }, { name: "GÁS CASCO", value: 200.00 }
+            { name: "ADITIVO RADIADOR ROOL TECH", value: 16.50 }, 
+            { name: "DISCO TACÓGRAFO", value: 48.00 },
+            { name: "LUBRAX ESSENTIAL 2T 200ml (VERDE)", value: 11.00 }, 
+            { name: "LUBRAX ESSENTIAL 2T 500ml (VERDE)", value: 23.00 },
+            { name: "LUBRAX ESSENTIAL 2T FC 200ml (AMARELO)", value: 16.00 }, 
+            { name: "LUBRAX ESSENTIAL 2T FC 500ml (AMARELO)", value: 31.00 },
+            { name: "FLUIDO DE FREIO HI TECH DOT 3 200ml", value: 12.00 }, 
+            { name: "FLUIDO DE FREIO HI TECH DOT 4 200ml", value: 12.00 },
+            { name: "STIHL", value: 65.00 }, 
+            { name: "SPRINT F900 10W40 4T", value: 42.00 }, 
+            { name: "SPRINTA F500 10W30", value: 35.00 },
+            { name: "SPRINTA F300 20W50", value: 30.00 }, 
+            { name: "URANIA 15W40 1 LITRO", value: 45.00 }, 
+            { name: "URANIA 15W40 4 LITROS", value: 125.00 },
+            { name: "KARTER TASA SUFIXO A", value: 28.00 }, 
+            { name: "SYNTIUM 800 10W40", value: 50.00 }, 
+            { name: "SYNTIUM 20W50", value: 28.00 },
+            { name: "SELENIA PERFORM 5W40", value: 43.00 }, 
+            { name: "SELENIA 5W30", value: 36.00 }, 
+            { name: "SELENIA K", value: 32.00 },
+            { name: "BARDAHL MAX 200ml", value: 25.00 }, 
+            { name: "GÁS", value: 119.00 }, 
+            { name: "GÁS CASCO", value: 200.00 },
+            { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 } // ADICIONADO AQUI
         ];
 
         // Usuários administradores
@@ -940,7 +981,7 @@
 
         // Banco de dados usando IndexedDB
         const DB_NAME = 'PostoPicoroDB';
-        const DB_VERSION = 1;
+        const DB_VERSION = 2; // Aumentei a versão para forçar atualização
         const STORE_USERS = 'users';
         const STORE_PRODUCTS = 'products';
         const STORE_SHIFTS = 'shifts';
@@ -962,7 +1003,7 @@
         let isNewShift = true;
         let currentShiftId = null;
         
-        // Inicializar banco de dados
+        // Inicializar banco de dados - CORRIGIDO
         function initDatabase() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -980,17 +1021,21 @@
                 
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
+                    console.log('Upgrading database to version:', DB_VERSION);
                     
                     // Criar store de usuários
                     if (!db.objectStoreNames.contains(STORE_USERS)) {
                         const userStore = db.createObjectStore(STORE_USERS, { keyPath: 'code' });
                         userStore.createIndex('name', 'name', { unique: false });
+                        console.log('Store de usuários criada');
                     }
                     
-                    // Criar store de produtos
+                    // Criar store de produtos - CORRIGIDO: usa autoIncrement para key
                     if (!db.objectStoreNames.contains(STORE_PRODUCTS)) {
-                        const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'name' });
+                        const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'id', autoIncrement: true });
+                        productStore.createIndex('name', 'name', { unique: true });
                         productStore.createIndex('value', 'value', { unique: false });
+                        console.log('Store de produtos criada');
                     }
                     
                     // Criar store de turnos
@@ -998,11 +1043,18 @@
                         const shiftStore = db.createObjectStore(STORE_SHIFTS, { keyPath: 'id', autoIncrement: true });
                         shiftStore.createIndex('userCode', 'userCode', { unique: false });
                         shiftStore.createIndex('date', 'date', { unique: false });
+                        console.log('Store de turnos criada');
                     }
                     
                     // Criar store de turnos ativos
                     if (!db.objectStoreNames.contains(STORE_ACTIVE_SHIFTS)) {
                         const activeShiftStore = db.createObjectStore(STORE_ACTIVE_SHIFTS, { keyPath: 'userCode' });
+                        console.log('Store de turnos ativos criada');
+                    }
+                    
+                    // Se estamos atualizando, apagar produtos antigos e recriar
+                    if (event.oldVersion < 2) {
+                        console.log('Atualizando estrutura do banco de dados');
                     }
                 };
             });
@@ -1064,30 +1116,50 @@
             });
         }
         
-        // Carregar dados iniciais no banco
+        // Carregar dados iniciais no banco - CORRIGIDO
         async function loadInitialData() {
             try {
                 // Carregar usuários
                 const existingUsers = await getAllItems(STORE_USERS);
                 if (existingUsers.length === 0) {
+                    console.log('Inserindo usuários iniciais...');
                     for (const user of users) {
                         await addItem(STORE_USERS, user);
                     }
                 } else {
                     users = existingUsers;
+                    console.log('Usuários carregados:', users.length);
                 }
                 
-                // Carregar produtos
+                // Carregar produtos - CORRIGIDO: sempre verifica e insere se necessário
                 const existingProducts = await getAllItems(STORE_PRODUCTS);
+                console.log('Produtos existentes no banco:', existingProducts.length);
+                
                 if (existingProducts.length === 0) {
-                    for (const product of products) {
-                        await addItem(STORE_PRODUCTS, product);
+                    console.log('Inserindo produtos iniciais...');
+                    for (const product of initialProducts) {
+                        await addItem(STORE_PRODUCTS, { name: product.name, value: product.value });
                     }
+                    products = initialProducts;
                 } else {
-                    products = existingProducts;
+                    products = existingProducts.map(p => ({ name: p.name, value: p.value }));
+                    console.log('Produtos carregados do banco:', products.length);
+                    
+                    // Verifica se o novo produto está presente
+                    const hasNewProduct = products.some(p => p.name === "ADITIVO GASOLINA RADNAQ");
+                    if (!hasNewProduct) {
+                        console.log('Adicionando ADITIVO GASOLINA RADNAQ...');
+                        await addItem(STORE_PRODUCTS, { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
+                        products.push({ name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
+                    }
                 }
+                
+                console.log('Produtos após carga:', products);
+                
             } catch (error) {
                 console.error('Erro ao carregar dados iniciais:', error);
+                // Em caso de erro, usa os dados locais
+                products = initialProducts;
             }
         }
         
@@ -1150,24 +1222,32 @@
             return brazilTime.toISOString().split('T')[0];
         }
 
-        // Função para gerar e baixar relatório em PDF
+        // Função para gerar e baixar relatório em HTML
         function generateAndDownloadReport() {
             // Primeiro, abre a impressão
             window.print();
             
-            // Depois de um pequeno delay, gera o PDF para download
+            // Depois de um pequeno delay, gera o HTML para download
             setTimeout(() => {
-                // Cria um elemento HTML para o relatório
+                // Gera o conteúdo do relatório
                 const reportContent = generateReportContent();
                 
-                // Cria um blob com o conteúdo
-                const blob = new Blob([reportContent], { type: 'text/html' });
+                // Cria um blob com o conteúdo HTML
+                const blob = new Blob([reportContent], { type: 'text/html;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
                 
                 // Cria um link para download
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `Relatorio_Turno_${sessionData.turn}_${sessionData.date.replace(/-/g, '')}.html`;
+                
+                // Nome do arquivo com data e turno
+                const dateObj = new Date(sessionData.date + 'T00:00:00');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const year = dateObj.getFullYear();
+                const fileName = `Relatorio_Turno${sessionData.turn}_${day}${month}${year}_${sessionData.frentistaName.replace(/\s+/g, '_')}.html`;
+                
+                a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
                 
@@ -1179,7 +1259,7 @@
             }, 1000);
         }
 
-        // Função para gerar o conteúdo do relatório
+        // Função para gerar o conteúdo do relatório HTML idêntico ao da impressão
         function generateReportContent() {
             const totalVendas = calculateTotalSales();
             const dateObj = new Date(sessionData.date + 'T00:00:00');
@@ -1188,8 +1268,18 @@
             const year = dateObj.getFullYear();
             const formattedDate = `${day}/${month}/${year}`;
             
+            // Coleta todos os dados da tabela visível (considerando busca/filtro)
             let tableContent = '';
-            products.forEach(product => {
+            let visibleProducts = products;
+            
+            // Se há termo de busca, filtra como na tabela visível
+            if (currentSearchTerm) {
+                visibleProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                );
+            }
+            
+            visibleProducts.forEach(product => {
                 const productId = product.name.replace(/\s+/g, '_').toLowerCase();
                 const initialQty = initialQuantities[productId] || 0;
                 const entryQty = entryQuantities[productId] || 0;
@@ -1199,70 +1289,219 @@
                 
                 tableContent += `
                     <tr>
-                        <td style="text-align: left; padding: 5px; border-bottom: 1px solid #ddd;">${product.name}</td>
-                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${initialQty}</td>
-                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">R$ ${formatCurrency(product.value)}</td>
-                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${entryQty}</td>
-                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${saleInfo.quantity}</td>
-                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">${finalStock}</td>
-                        <td style="text-align: center; padding: 5px; border-bottom: 1px solid #ddd;">R$ ${formatCurrency(saleTotal)}</td>
+                        <td class="product-name" style="text-align: left; padding: 3px 2px; font-size: 10px;">${product.name}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${initialQty}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(product.value)}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${saleInfo.quantity}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
                     </tr>
                 `;
             });
             
+            // Gera HTML idêntico ao da impressão
             return `
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatório Turno ${sessionData.turn} - ${formattedDate}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-        .header h1 { color: #1A355C; margin: 0; }
-        .info { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .info div { flex: 1; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th { background-color: #1A355C; color: white; padding: 10px; text-align: center; }
-        td { padding: 8px; border-bottom: 1px solid #ddd; }
-        .summary { background-color: #FFF176; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em; border: 2px solid #FFEB3B; }
-        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 0.9em; }
+        @page {
+            margin: 0.5cm;
+        }
+        
+        * { 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            box-sizing: border-box !important;
+            font-family: 'Roboto', sans-serif !important;
+        }
+        
+        body { 
+            background: white !important; 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            font-size: 12px !important;
+            width: 100% !important;
+            min-height: 100vh !important;
+        }
+        
+        .container { 
+            width: 100% !important; 
+            height: auto !important; 
+            min-height: auto !important; 
+            max-width: none !important; 
+            max-height: none !important;
+            box-shadow: none !important; 
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        /* Cabeçalho de impressão */
+        .print-header { 
+            display: flex !important; 
+            justify-content: flex-end !important; 
+            align-items: flex-start !important; 
+            gap: 15px !important; 
+            margin-bottom: 10px !important; 
+            font-size: 10px !important; 
+            padding: 0 8px !important;
+            page-break-inside: avoid !important;
+        }
+        
+        .print-header div { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            line-height: 1.2 !important; 
+        }
+        
+        .print-header strong { 
+            font-size: 9px !important; 
+            margin-bottom: 2px !important; 
+            color: #1A355C !important;
+        }
+        
+        .print-header span { 
+            font-size: 10px !important; 
+            font-weight: 600 !important;
+        }
+        
+        /* Tabela */
+        table { 
+            width: 100% !important; 
+            border-collapse: collapse !important; 
+            font-size: 10px !important; 
+            margin-top: 0 !important; 
+            page-break-inside: avoid !important;
+        }
+        
+        thead { 
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important; 
+            position: static !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; 
+        }
+        
+        th { 
+            padding: 4px 2px !important; 
+            text-align: center !important; 
+            font-weight: 700 !important; 
+            color: #1A355C !important; 
+            border-bottom: 2px solid #cbd5e1 !important; 
+            font-size: 9px !important; 
+        }
+        
+        td { 
+            padding: 3px 2px !important; 
+            line-height: 1.2 !important; 
+            border-bottom: 0.5px solid #e2e8f0 !important; 
+            font-size: 10px !important;
+        }
+        
+        .product-name {
+            font-size: 10px !important;
+            padding-left: 3px !important;
+            text-align: left !important;
+        }
+
+        .numeric {
+            text-align: center !important;
+            font-variant-numeric: tabular-nums !important;
+            font-size: 10px !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        /* Área do Total de Vendas */
+        .sales-summary {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 8px 15px !important;
+            background: #FFF176 !important;
+            border-top: 2px solid #FFEB3B !important;
+            margin-top: 10px !important;
+            font-size: 11px !important;
+            margin-bottom: 0 !important;
+            page-break-inside: avoid !important;
+        }
+        
+        .total-vendas { 
+            font-weight: 700 !important; 
+            color: #5D4037 !important;
+            font-size: 11px !important;
+        }
+        
+        .total-value {
+            font-weight: 700 !important;
+            color: #1A355C !important;
+            font-size: 12px !important;
+        }
+        
+        /* Remove qualquer data/hora do navegador */
+        .date-time, .url, .page-title {
+            display: none !important;
+        }
+        
+        /* Layout de colunas igual ao da impressão */
+        .col-produto { width: 42% !important; }
+        .col-inicial { width: 9% !important; }
+        .col-valor { width: 9% !important; }
+        .col-entrada { width: 9% !important; }
+        .col-vendidos { width: 9% !important; }
+        .col-estoque { width: 9% !important; }
+        
+        tbody tr { 
+            page-break-inside: avoid !important; 
+            height: 14px !important; 
+        }
+        
+        .table-container { 
+            overflow: visible !important; 
+            height: auto !important; 
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Posto Picoró - Relatório de Turno</h1>
-    </div>
-    
-    <div class="info">
-        <div><strong>Data:</strong> ${formattedDate}</div>
-        <div><strong>Frentista:</strong> ${sessionData.frentistaName}</div>
-        <div><strong>Turno:</strong> ${sessionData.turn}</div>
-    </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>PRODUTO</th>
-                <th>QTD INICIAL</th>
-                <th>VALOR (R$)</th>
-                <th>ENTRADA</th>
-                <th>QTD VENDIDA</th>
-                <th>ESTOQUE FINAL</th>
-                <th>TOTAL VENDAS</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${tableContent}
-        </tbody>
-    </table>
-    
-    <div class="summary">
-        TOTAL DE VENDAS: R$ ${formatCurrency(totalVendas)}
-    </div>
-    
-    <div class="footer">
-        Relatório gerado em ${new Date().toLocaleString('pt-BR')} | Sistema de Controle Posto Picoró
+    <div class="container">
+        <!-- Cabeçalho de impressão -->
+        <div class="print-header">
+            <div><strong>Data:</strong><span>${formattedDate}</span></div>
+            <div><strong>Frentista:</strong><span>${sessionData.frentistaName}</span></div>
+            <div><strong>Turno:</strong><span>Turno ${sessionData.turn}</span></div>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-produto" style="text-align: left;">PRODUTO</th>
+                        <th class="col-inicial">QTD INICIAL</th>
+                        <th class="col-valor">VALOR (R$)</th>
+                        <th class="col-entrada">ENTRADA</th>
+                        <th class="col-vendidos">QTD VENDIDA</th>
+                        <th class="col-estoque">ESTOQUE FINAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableContent}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Área do Total de Vendas -->
+        <div class="sales-summary">
+            <div class="total-vendas">TOTAL DE VENDAS:</div>
+            <div class="total-value">R$ ${formatCurrency(totalVendas)}</div>
+        </div>
+        
+        <!-- Rodapé simples para o arquivo baixado -->
+        <div style="text-align: center; margin-top: 20px; font-size: 9px; color: #666; padding: 10px;">
+            Sistema de Controle - Posto Picoró<br>
+            Relatório gerado em ${new Date().toLocaleString('pt-BR')}
+        </div>
     </div>
 </body>
 </html>
@@ -1414,14 +1653,14 @@
         async function removeActiveShift(userCode) {
             try {
                 await deleteItem(STORE_ACTIVE_SHIFTS, userCode);
-            return true;
+                return true;
             } catch (error) {
                 console.error('Erro ao remover turno ativo:', error);
                 return false;
             }
         }
 
-        // Função para salvar dados do turno
+        // Função para salvar dados do turno - CORRIGIDO
         async function saveShiftData() {
             try {
                 const shiftData = {
@@ -1442,6 +1681,7 @@
                     shiftId: currentShiftId
                 });
                 
+                console.log('Turno salvo com sucesso');
                 return true;
             } catch (error) {
                 console.error('Erro ao salvar dados do turno:', error);
@@ -1457,6 +1697,7 @@
                     initialQuantities = { ...shiftData.initialQuantities };
                     entryQuantities = { ...shiftData.entryQuantities };
                     salesData = { ...shiftData.salesData };
+                    console.log('Dados do turno carregados:', shiftData);
                     return true;
                 }
                 return false;
@@ -1709,7 +1950,14 @@
                 await addItem(STORE_PRODUCTS, product);
             } else {
                 products[currentEditingIndex] = product;
-                await updateItem(STORE_PRODUCTS, product);
+                // Para atualizar, precisamos primeiro obter o ID do produto existente
+                const allProducts = await getAllItems(STORE_PRODUCTS);
+                const existingProduct = allProducts.find(p => p.name === product.name);
+                if (existingProduct) {
+                    await updateItem(STORE_PRODUCTS, { ...existingProduct, ...product });
+                } else {
+                    await addItem(STORE_PRODUCTS, product);
+                }
             }
             
             document.getElementById('product-modal').style.display = 'none';
@@ -1748,7 +1996,12 @@
                 btn.addEventListener('click', async (e) => {
                     const index = parseInt(e.target.getAttribute('data-index'));
                     if (confirm(`Tem certeza que deseja remover "${products[index].name}"?`)) {
-                        await deleteItem(STORE_PRODUCTS, products[index].name);
+                        // Para remover do banco, precisamos primeiro obter o ID do produto
+                        const allProducts = await getAllItems(STORE_PRODUCTS);
+                        const productToDelete = allProducts.find(p => p.name === products[index].name);
+                        if (productToDelete) {
+                            await deleteItem(STORE_PRODUCTS, productToDelete.id);
+                        }
                         products.splice(index, 1);
                         renderEditTable();
                         renderTable();
@@ -1971,21 +2224,37 @@
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', async () => {
-            // Inicializa o banco de dados
-            await initDatabase();
-            await loadInitialData();
-            
-            products = await getAllItems(STORE_PRODUCTS);
-            users = await getAllItems(STORE_USERS);
-            
-            initialQuantities = {};
-            entryQuantities = {};
-            salesData = {};
-            sessionData = {};
-            
-            // Define a data atual do Brasil como padrão
-            const dataBrasil = getBrazilianDate();
-            document.getElementById('session-date').value = dataBrasil;
+            try {
+                // Inicializa o banco de dados
+                await initDatabase();
+                await loadInitialData();
+                
+                // Recarrega produtos do banco
+                const allProducts = await getAllItems(STORE_PRODUCTS);
+                products = allProducts.map(p => ({ name: p.name, value: p.value }));
+                
+                console.log('Produtos carregados na inicialização:', products.length);
+                console.log('Produtos:', products);
+                
+                // Recarrega usuários do banco
+                const allUsers = await getAllItems(STORE_USERS);
+                users = allUsers;
+                
+                initialQuantities = {};
+                entryQuantities = {};
+                salesData = {};
+                sessionData = {};
+                
+                // Define a data atual do Brasil como padrão
+                const dataBrasil = getBrazilianDate();
+                document.getElementById('session-date').value = dataBrasil;
+                document.getElementById('session-date').min = dataBrasil;
+                document.getElementById('session-date').max = dataBrasil;
+                
+            } catch (error) {
+                console.error('Erro na inicialização:', error);
+                alert('Erro ao inicializar o sistema. Por favor, recarregue a página.');
+            }
         });
     </script>
 </body>
