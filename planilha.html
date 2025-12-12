@@ -1261,43 +1261,92 @@
 
         // Função para gerar o conteúdo do relatório HTML idêntico ao da impressão
         function generateReportContent() {
-            const totalVendas = calculateTotalSales();
             const dateObj = new Date(sessionData.date + 'T00:00:00');
             const day = String(dateObj.getDate()).padStart(2, '0');
             const month = String(dateObj.getMonth() + 1).padStart(2, '0');
             const year = dateObj.getFullYear();
             const formattedDate = `${day}/${month}/${year}`;
             
-            // Coleta todos os dados da tabela visível (considerando busca/filtro)
+            // Coleta todos os dados da tabela visível (usando os valores atuais dos inputs)
             let tableContent = '';
-            let visibleProducts = products;
+            let totalVendasCalculado = 0;
             
-            // Se há termo de busca, filtra como na tabela visível
-            if (currentSearchTerm) {
-                visibleProducts = products.filter(product => 
-                    product.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
-                );
-            }
+            // Percorre todas as linhas da tabela visível
+            const tableRows = document.querySelectorAll('#table-body tr');
             
-            visibleProducts.forEach(product => {
-                const productId = product.name.replace(/\s+/g, '_').toLowerCase();
-                const initialQty = initialQuantities[productId] || 0;
-                const entryQty = entryQuantities[productId] || 0;
-                const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
-                const saleTotal = saleInfo.quantity * product.value;
-                const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
+            tableRows.forEach(row => {
+                // Obtém os valores dos campos da linha
+                const productName = row.querySelector('.product-name').textContent;
+                const initialQtyInput = row.querySelector('.qty-input');
+                const entryQtyInput = row.querySelector('.entry-input');
+                const soldQtyCell = row.querySelector('td:nth-child(5)');
+                const finalStockCell = row.querySelector('td:nth-child(6)');
+                const productValueCell = row.querySelector('td:nth-child(3)');
+                const saleTotalSpan = row.querySelector('.sale-total');
+                
+                const initialQty = initialQtyInput ? (initialQtyInput.value || 0) : 0;
+                const entryQty = entryQtyInput ? (entryQtyInput.value || 0) : 0;
+                const soldQty = soldQtyCell ? soldQtyCell.textContent : 0;
+                const finalStock = finalStockCell ? finalStockCell.textContent : 0;
+                
+                // Extrai o valor numérico da célula de valor (remove "R$ " e substitui "," por ".")
+                let productValue = 0;
+                if (productValueCell) {
+                    const valueText = productValueCell.textContent.trim();
+                    productValue = parseFloat(valueText.replace('R$', '').replace('.', '').replace(',', '.'));
+                }
+                
+                // Calcula o total de vendas para esta linha
+                const soldQtyNum = parseInt(soldQty) || 0;
+                const lineTotal = soldQtyNum * productValue;
+                totalVendasCalculado += lineTotal;
                 
                 tableContent += `
                     <tr>
-                        <td class="product-name" style="text-align: left; padding: 3px 2px; font-size: 10px;">${product.name}</td>
+                        <td class="product-name" style="text-align: left; padding: 3px 2px; font-size: 10px;">${productName}</td>
                         <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${initialQty}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(product.value)}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(productValue)}</td>
                         <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${saleInfo.quantity}</td>
+                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${soldQty}</td>
                         <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
                     </tr>
                 `;
             });
+            
+            // Se não houver linhas (tabela vazia), usa os dados do estado atual
+            if (tableRows.length === 0) {
+                let visibleProducts = products;
+                
+                // Se há termo de busca, filtra como na tabela visível
+                if (currentSearchTerm) {
+                    visibleProducts = products.filter(product => 
+                        product.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
+                    );
+                }
+                
+                visibleProducts.forEach(product => {
+                    const productId = product.name.replace(/\s+/g, '_').toLowerCase();
+                    const initialQty = initialQuantities[productId] || 0;
+                    const entryQty = entryQuantities[productId] || 0;
+                    const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
+                    const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
+                    
+                    // Calcula o total de vendas para esta linha
+                    const lineTotal = saleInfo.quantity * product.value;
+                    totalVendasCalculado += lineTotal;
+                    
+                    tableContent += `
+                        <tr>
+                            <td class="product-name" style="text-align: left; padding: 3px 2px; font-size: 10px;">${product.name}</td>
+                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${initialQty}</td>
+                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(product.value)}</td>
+                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
+                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${saleInfo.quantity}</td>
+                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
+                        </tr>
+                    `;
+                });
+            }
             
             // Gera HTML idêntico ao da impressão
             return `
@@ -1494,7 +1543,7 @@
         <!-- Área do Total de Vendas -->
         <div class="sales-summary">
             <div class="total-vendas">TOTAL DE VENDAS:</div>
-            <div class="total-value">R$ ${formatCurrency(totalVendas)}</div>
+            <div class="total-value">R$ ${formatCurrency(totalVendasCalculado)}</div>
         </div>
         
         <!-- Rodapé simples para o arquivo baixado -->
@@ -1505,7 +1554,7 @@
     </div>
 </body>
 </html>
-            `;
+    `;
         }
 
         // Sistema de autenticação
