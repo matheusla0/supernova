@@ -506,12 +506,18 @@
                 margin: 0.5cm;
             }
             
+            * {
+                font-weight: bold !important;
+            }
+            
             body { 
                 background: white !important; 
                 padding: 0 !important; 
                 margin: 0 !important; 
                 font-size: 12px !important;
+                font-weight: bold !important;
             }
+            
             .container { 
                 box-shadow: none !important; 
                 border-radius: 0 !important; 
@@ -521,6 +527,7 @@
                 max-width: none !important; 
                 max-height: none !important; 
             }
+            
             .controls, .turn-controls, .btn-close-shift, footer, .sale-controls, 
             header, .header-info, .header-left { 
                 display: none !important; 
@@ -530,6 +537,8 @@
                 border: none !important; 
                 background: transparent !important; 
                 font-size: 10px !important;
+                font-weight: 700 !important;
+                font-family: 'Courier New', monospace !important;
             }
             
             /* Cabeçalho de impressão simples */
@@ -542,21 +551,26 @@
                 font-size: 10px !important; 
                 padding: 0 8px !important;
                 page-break-inside: avoid !important;
+                font-weight: 700 !important;
             }
+            
             .print-header div { 
                 display: flex; 
                 flex-direction: column; 
                 align-items: flex-start; 
                 line-height: 1.2 !important; 
             }
+            
             .print-header strong { 
                 font-size: 9px !important; 
                 margin-bottom: 2px !important; 
                 color: #1A355C !important;
+                font-weight: 800 !important;
             }
+            
             .print-header span { 
                 font-size: 10px !important; 
-                font-weight: 600 !important;
+                font-weight: 700 !important;
             }
             
             .sales-summary { 
@@ -568,6 +582,7 @@
                 font-size: 11px !important; 
                 margin-bottom: 0 !important;
                 page-break-inside: avoid !important;
+                font-weight: 800 !important;
             }
             
             table { 
@@ -575,29 +590,35 @@
                 margin-top: 0 !important; 
                 page-break-inside: avoid !important;
             }
-            th, td { 
+            
+            th { 
+                padding: 4px 2px !important; 
+                text-align: center !important; 
+                font-weight: 800 !important; 
+                color: #1A355C !important; 
+                border-bottom: 2px solid #cbd5e1 !important; 
+                font-size: 9px !important; 
+            }
+            
+            td { 
                 padding: 3px 2px !important; 
                 line-height: 1.2 !important; 
                 border-bottom: 0.5px solid #e2e8f0 !important; 
                 font-size: 10px !important;
-            }
-            
-            thead th {
-                font-size: 9px !important;
-                padding: 4px 2px !important;
                 font-weight: 700 !important;
-                color: #1A355C !important;
             }
             
             .product-name {
                 font-size: 10px !important;
                 padding-left: 3px !important;
+                font-weight: 700 !important;
             }
 
             /* Uniformizar tamanho dos números na impressão */
             .numeric, .qty-input, .entry-input, .sale-qty, .sale-total {
                 font-size: 10px !important;
                 font-family: 'Courier New', monospace !important;
+                font-weight: 700 !important;
             }
             
             .col-vendas { display: none !important; }
@@ -612,6 +633,7 @@
                 page-break-inside: avoid !important; 
                 height: 14px !important; 
             }
+            
             .table-container { 
                 overflow: visible !important; 
                 height: auto !important; 
@@ -625,6 +647,18 @@
             /* Remove qualquer data/hora do navegador */
             .date-time, .url, .page-title {
                 display: none !important;
+            }
+            
+            .total-vendas { 
+                font-weight: 800 !important;
+                color: #5D4037 !important;
+                font-size: 11px !important;
+            }
+            
+            .total-value {
+                font-weight: 900 !important;
+                color: #1A355C !important;
+                font-size: 12px !important;
             }
         }
         
@@ -1009,8 +1043,18 @@
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
                 
                 request.onerror = () => {
-                    console.error('Erro ao abrir banco de dados');
-                    reject(request.error);
+                    console.error('Erro ao abrir banco de dados:', request.error);
+                    // Se houver erro, tenta abrir sem versão específica
+                    const fallbackRequest = indexedDB.open(DB_NAME);
+                    fallbackRequest.onerror = () => {
+                        console.error('Erro também no fallback:', fallbackRequest.error);
+                        reject(fallbackRequest.error);
+                    };
+                    fallbackRequest.onsuccess = () => {
+                        db = fallbackRequest.result;
+                        console.log('Banco de dados aberto com sucesso no modo fallback');
+                        resolve(db);
+                    };
                 };
                 
                 request.onsuccess = () => {
@@ -1030,7 +1074,7 @@
                         console.log('Store de usuários criada');
                     }
                     
-                    // Criar store de produtos - CORRIGIDO: usa autoIncrement para key
+                    // Criar store de produtos
                     if (!db.objectStoreNames.contains(STORE_PRODUCTS)) {
                         const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'id', autoIncrement: true });
                         productStore.createIndex('name', 'name', { unique: true });
@@ -1054,8 +1098,25 @@
                     
                     // Se estamos atualizando, apagar produtos antigos e recriar
                     if (event.oldVersion < 2) {
-                        console.log('Atualizando estrutura do banco de dados');
+                        console.log('Atualizando estrutura do banco de dados da versão', event.oldVersion, 'para', DB_VERSION);
+                        
+                        // Se existia a store de produtos antiga, apagar e recriar
+                        if (db.objectStoreNames.contains(STORE_PRODUCTS)) {
+                            db.deleteObjectStore(STORE_PRODUCTS);
+                            console.log('Store de produtos antiga removida');
+                        }
+                        
+                        // Recriar store de produtos
+                        const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'id', autoIncrement: true });
+                        productStore.createIndex('name', 'name', { unique: true });
+                        productStore.createIndex('value', 'value', { unique: false });
+                        console.log('Store de produtos recriada');
                     }
+                };
+                
+                request.onblocked = () => {
+                    console.warn('Banco de dados está bloqueado por outra aba. Feche outras abas com o sistema aberto.');
+                    alert('Por favor, feche outras abas com o sistema aberto e recarregue a página.');
                 };
             });
         }
@@ -1063,103 +1124,141 @@
         // Funções para manipular o banco de dados
         function addItem(storeName, item) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.add(item);
-                
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                try {
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.add(item);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
         
         function getItem(storeName, key) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readonly');
-                const store = transaction.objectStore(storeName);
-                const request = store.get(key);
-                
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                try {
+                    const transaction = db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(key);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
         
         function getAllItems(storeName) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readonly');
-                const store = transaction.objectStore(storeName);
-                const request = store.getAll();
-                
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                try {
+                    const transaction = db.transaction([storeName], 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.getAll();
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
         
         function updateItem(storeName, item) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.put(item);
-                
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                try {
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put(item);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
         
         function deleteItem(storeName, key) {
             return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                const request = store.delete(key);
-                
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+                try {
+                    const transaction = db.transaction([storeName], 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(key);
+                    
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                } catch (error) {
+                    reject(error);
+                }
             });
         }
         
-        // Carregar dados iniciais no banco - CORRIGIDO
+        // Carregar dados iniciais no banco - CORRIGIDO E SIMPLIFICADO
         async function loadInitialData() {
             try {
                 // Carregar usuários
-                const existingUsers = await getAllItems(STORE_USERS);
+                const existingUsers = await getAllItems(STORE_USERS).catch(() => []);
                 if (existingUsers.length === 0) {
                     console.log('Inserindo usuários iniciais...');
-                    for (const user of users) {
-                        await addItem(STORE_USERS, user);
+                    for (const user of adminUsers) {
+                        try {
+                            await addItem(STORE_USERS, user);
+                        } catch (error) {
+                            console.warn('Erro ao inserir usuário', user.name, ':', error);
+                        }
                     }
+                    users = [...adminUsers];
                 } else {
                     users = existingUsers;
                     console.log('Usuários carregados:', users.length);
                 }
                 
-                // Carregar produtos - CORRIGIDO: sempre verifica e insere se necessário
-                const existingProducts = await getAllItems(STORE_PRODUCTS);
+                // Carregar produtos
+                const existingProducts = await getAllItems(STORE_PRODUCTS).catch(() => []);
                 console.log('Produtos existentes no banco:', existingProducts.length);
                 
                 if (existingProducts.length === 0) {
                     console.log('Inserindo produtos iniciais...');
                     for (const product of initialProducts) {
-                        await addItem(STORE_PRODUCTS, { name: product.name, value: product.value });
+                        try {
+                            await addItem(STORE_PRODUCTS, { name: product.name, value: product.value });
+                        } catch (error) {
+                            console.warn('Erro ao inserir produto', product.name, ':', error);
+                        }
                     }
-                    products = initialProducts;
+                    products = [...initialProducts];
                 } else {
-                    products = existingProducts.map(p => ({ name: p.name, value: p.value }));
+                    // Mapeia os produtos do banco para o formato correto
+                    products = existingProducts.map(p => ({ 
+                        name: p.name, 
+                        value: p.value 
+                    }));
                     console.log('Produtos carregados do banco:', products.length);
                     
                     // Verifica se o novo produto está presente
                     const hasNewProduct = products.some(p => p.name === "ADITIVO GASOLINA RADNAQ");
                     if (!hasNewProduct) {
                         console.log('Adicionando ADITIVO GASOLINA RADNAQ...');
-                        await addItem(STORE_PRODUCTS, { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
-                        products.push({ name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
+                        try {
+                            await addItem(STORE_PRODUCTS, { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
+                            products.push({ name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
+                        } catch (error) {
+                            console.warn('Erro ao adicionar novo produto:', error);
+                        }
                     }
                 }
                 
-                console.log('Produtos após carga:', products);
+                console.log('Produtos após carga:', products.length, 'produtos');
                 
             } catch (error) {
                 console.error('Erro ao carregar dados iniciais:', error);
                 // Em caso de erro, usa os dados locais
-                products = initialProducts;
+                products = [...initialProducts];
+                users = [...adminUsers];
             }
         }
         
@@ -1343,8 +1442,8 @@
                             <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
                             <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${saleInfo.quantity}</td>
                             <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
-                        </tr>
-                    `;
+                    </tr>
+                `;
                 });
             }
             
@@ -1996,16 +2095,24 @@
             
             if (currentEditingIndex === -1) {
                 products.push(product);
-                await addItem(STORE_PRODUCTS, product);
+                try {
+                    await addItem(STORE_PRODUCTS, product);
+                } catch (error) {
+                    console.error('Erro ao adicionar produto:', error);
+                }
             } else {
                 products[currentEditingIndex] = product;
                 // Para atualizar, precisamos primeiro obter o ID do produto existente
-                const allProducts = await getAllItems(STORE_PRODUCTS);
-                const existingProduct = allProducts.find(p => p.name === product.name);
-                if (existingProduct) {
-                    await updateItem(STORE_PRODUCTS, { ...existingProduct, ...product });
-                } else {
-                    await addItem(STORE_PRODUCTS, product);
+                try {
+                    const allProducts = await getAllItems(STORE_PRODUCTS);
+                    const existingProduct = allProducts.find(p => p.name === product.name);
+                    if (existingProduct) {
+                        await updateItem(STORE_PRODUCTS, { ...existingProduct, ...product });
+                    } else {
+                        await addItem(STORE_PRODUCTS, product);
+                    }
+                } catch (error) {
+                    console.error('Erro ao atualizar produto:', error);
                 }
             }
             
@@ -2045,15 +2152,19 @@
                 btn.addEventListener('click', async (e) => {
                     const index = parseInt(e.target.getAttribute('data-index'));
                     if (confirm(`Tem certeza que deseja remover "${products[index].name}"?`)) {
-                        // Para remover do banco, precisamos primeiro obter o ID do produto
-                        const allProducts = await getAllItems(STORE_PRODUCTS);
-                        const productToDelete = allProducts.find(p => p.name === products[index].name);
-                        if (productToDelete) {
-                            await deleteItem(STORE_PRODUCTS, productToDelete.id);
+                        try {
+                            // Para remover do banco, precisamos primeiro obter o ID do produto
+                            const allProducts = await getAllItems(STORE_PRODUCTS);
+                            const productToDelete = allProducts.find(p => p.name === products[index].name);
+                            if (productToDelete) {
+                                await deleteItem(STORE_PRODUCTS, productToDelete.id);
+                            }
+                            products.splice(index, 1);
+                            renderEditTable();
+                            renderTable();
+                        } catch (error) {
+                            console.error('Erro ao remover produto:', error);
                         }
-                        products.splice(index, 1);
-                        renderEditTable();
-                        renderTable();
                     }
                 });
             });
@@ -2271,28 +2382,10 @@
             if (event.target === document.getElementById('continue-shift-modal')) document.getElementById('continue-shift-modal').style.display = 'none';
         });
 
-        // Inicialização
+        // Inicialização - CORRIGIDO
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // Inicializa o banco de dados
-                await initDatabase();
-                await loadInitialData();
-                
-                // Recarrega produtos do banco
-                const allProducts = await getAllItems(STORE_PRODUCTS);
-                products = allProducts.map(p => ({ name: p.name, value: p.value }));
-                
-                console.log('Produtos carregados na inicialização:', products.length);
-                console.log('Produtos:', products);
-                
-                // Recarrega usuários do banco
-                const allUsers = await getAllItems(STORE_USERS);
-                users = allUsers;
-                
-                initialQuantities = {};
-                entryQuantities = {};
-                salesData = {};
-                sessionData = {};
+                console.log('Iniciando sistema...');
                 
                 // Define a data atual do Brasil como padrão
                 const dataBrasil = getBrazilianDate();
@@ -2300,9 +2393,43 @@
                 document.getElementById('session-date').min = dataBrasil;
                 document.getElementById('session-date').max = dataBrasil;
                 
+                // Inicializa o banco de dados
+                await initDatabase();
+                
+                // Carrega dados iniciais
+                await loadInitialData();
+                
+                // Inicializa variáveis
+                initialQuantities = {};
+                entryQuantities = {};
+                salesData = {};
+                sessionData = {};
+                
+                console.log('Sistema inicializado com sucesso!');
+                console.log('Produtos carregados:', products.length);
+                console.log('Usuários carregados:', users.length);
+                
+                // Mostra tela inicial
+                document.getElementById('initial-container').style.display = 'flex';
+                
             } catch (error) {
-                console.error('Erro na inicialização:', error);
-                alert('Erro ao inicializar o sistema. Por favor, recarregue a página.');
+                console.error('Erro crítico na inicialização:', error);
+                
+                // Tenta uma abordagem mais simples em caso de erro
+                alert('Inicializando em modo de segurança devido a um erro no banco de dados. Algumas funcionalidades podem estar limitadas.');
+                
+                // Usa dados locais diretamente
+                products = [...initialProducts];
+                users = [...adminUsers];
+                
+                // Define a data atual do Brasil como padrão
+                const dataBrasil = getBrazilianDate();
+                document.getElementById('session-date').value = dataBrasil;
+                document.getElementById('session-date').min = dataBrasil;
+                document.getElementById('session-date').max = dataBrasil;
+                
+                // Mostra tela inicial
+                document.getElementById('initial-container').style.display = 'flex';
             }
         });
     </script>
