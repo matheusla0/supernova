@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Plataforma - Escolha uma função</title>
+  <title>Plataforma - Painel Administrativo</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -19,7 +19,6 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      text-transform: uppercase;
       padding: 20px;
       box-sizing: border-box;
       overflow: hidden;
@@ -64,176 +63,176 @@
       filter: blur(0.5px);
     }
 
-    /* Arco de luzes de natal */
-    .light-arch {
+    /* ARCO DE LUZES DE NATAL - VERSÃO SUPERIOR */
+    .light-arch-top {
       position: absolute;
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 90%;
-      max-width: 1200px;
-      height: 150px;
+      width: 95%;
+      max-width: 1300px;
+      height: 120px;
       pointer-events: none;
       z-index: 2;
       overflow: hidden;
     }
 
-    .light-arch::before {
-      content: '';
+    .light-string-top {
       position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 30px;
+      left: 0;
       width: 100%;
-      height: 80px;
-      background: radial-gradient(ellipse at center, 
-        rgba(255, 0, 0, 0.1) 0%,
-        transparent 70%
-      );
-      filter: blur(20px);
+      height: 40px;
     }
 
-    .light-string {
+    .light-cord-top {
       position: absolute;
-      top: 40px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg,
+        #444 0%,
+        #666 25%,
+        #888 50%,
+        #666 75%,
+        #444 100%
+      );
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .light-top {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 
+        0 0 20px currentColor,
+        0 0 40px currentColor,
+        inset 0 0 15px rgba(255, 255, 255, 0.6);
+      animation: light-blink-top 1.8s infinite;
+      z-index: 3;
+    }
+
+    .light-top::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    /* ARCO DE LUZES INFERIOR */
+    .light-arch-bottom {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 1100px;
+      height: 80px;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .light-string-bottom {
+      position: absolute;
+      bottom: 20px;
       left: 0;
       width: 100%;
       height: 30px;
     }
 
-    .light-cord {
+    .light-bottom {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg,
-        #333 0%,
-        #666 25%,
-        #888 50%,
-        #666 75%,
-        #333 100%
-      );
-    }
-
-    .light {
-      position: absolute;
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       box-shadow: 
         0 0 15px currentColor,
         0 0 30px currentColor,
         inset 0 0 10px rgba(255, 255, 255, 0.5);
-      animation: light-blink 1.5s infinite;
+      animation: light-blink-bottom 2s infinite;
       z-index: 3;
     }
 
-    .light::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 10px;
-      height: 10px;
-      background: white;
-      border-radius: 50%;
-      filter: blur(1px);
-    }
-
-    /* Logotipo */
-    .logo-container {
+    /* CABEÇALHO COM LOGO */
+    .header-container {
       position: relative;
-      margin-bottom: 80px;
+      margin-bottom: 60px;
       z-index: 3;
-      padding: 30px;
-      background: rgba(10, 30, 50, 0.4);
-      border-radius: 25px;
-      backdrop-filter: blur(12px);
+      padding: 25px 40px;
+      background: rgba(10, 30, 50, 0.5);
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
       box-shadow: 
-        0 0 40px rgba(200, 0, 0, 0.25),
-        0 0 80px rgba(0, 150, 0, 0.15),
-        0 0 120px rgba(0, 0, 255, 0.1),
-        inset 0 0 30px rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+        0 0 50px rgba(200, 0, 0, 0.3),
+        0 0 100px rgba(0, 150, 0, 0.2),
+        0 0 150px rgba(0, 0, 255, 0.15),
+        inset 0 0 40px rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: center;
     }
 
-    .logo {
-      max-width: 500px;
-      height: auto;
-      display: block;
-      filter: 
-        drop-shadow(0 0 15px rgba(255, 0, 0, 0.4))
-        drop-shadow(0 0 25px rgba(0, 255, 0, 0.3))
-        drop-shadow(0 0 35px rgba(0, 0, 255, 0.2));
-      animation: logo-glow 6s ease-in-out infinite;
-    }
-
-    /* Botões */
-    .btn-container {
-      display: flex;
-      gap: 35px;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 100%;
-      max-width: 650px;
-      z-index: 3;
-      position: relative;
-    }
-
-    .btn-wrapper {
-      position: relative;
-      flex: 1 1 200px;
-      min-width: 200px;
-    }
-
-    .btn-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: calc(100% + 20px);
-      height: calc(100% + 20px);
-      background: radial-gradient(
-        ellipse at center,
-        rgba(255, 255, 255, 0.15) 0%,
-        transparent 70%
-      );
-      border-radius: 18px;
-      filter: blur(15px);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      z-index: 1;
-    }
-
-    button {
-      background: linear-gradient(145deg, 
-        rgba(200, 0, 0, 0.95), 
-        rgba(150, 0, 0, 0.85));
+    .header-title {
       color: white;
-      border: none;
-      padding: 25px 45px;
-      font-size: 20px;
-      border-radius: 18px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-size: 32px;
+      margin-bottom: 15px;
       text-transform: uppercase;
-      box-shadow: 
-        0 12px 35px rgba(200, 0, 0, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.2),
-        0 0 0 2px rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-      z-index: 2;
-      width: 100%;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
+      text-shadow: 
+        0 0 10px rgba(255, 0, 0, 0.5),
+        0 0 20px rgba(0, 255, 0, 0.3);
+      animation: title-glow 5s ease-in-out infinite;
     }
 
-    button::before {
+    .header-subtitle {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 18px;
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    /* CONTAINER DE FUNÇÕES */
+    .functions-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      width: 100%;
+      max-width: 1000px;
+      z-index: 3;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .function-card {
+      position: relative;
+      background: linear-gradient(145deg, 
+        rgba(25, 50, 75, 0.8), 
+        rgba(15, 35, 55, 0.9));
+      border-radius: 20px;
+      padding: 35px 25px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 2px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .function-card::before {
       content: '';
       position: absolute;
       top: 0;
@@ -243,99 +242,148 @@
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.1),
         transparent
       );
       transition: left 0.8s ease;
     }
 
-    button:hover {
-      transform: translateY(-10px) scale(1.06);
+    .function-card:hover {
+      transform: translateY(-12px) scale(1.05);
       box-shadow: 
-        0 25px 50px rgba(255, 0, 0, 0.45),
-        0 0 60px rgba(255, 100, 100, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.3),
-        0 0 0 3px rgba(255, 255, 255, 0.15);
+        0 25px 50px rgba(255, 100, 0, 0.4),
+        0 0 80px rgba(255, 200, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 0 3px rgba(255, 255, 255, 0.1);
     }
 
-    button:hover::before {
+    .function-card:hover::before {
       left: 100%;
     }
 
-    button:hover + .btn-glow {
-      opacity: 1;
+    .card-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      display: block;
+      filter: drop-shadow(0 0 10px currentColor);
     }
 
-    /* Segundo botão - Verde */
-    .btn-wrapper:nth-child(2) button {
+    .card-title {
+      color: white;
+      font-size: 22px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .card-description {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 25px;
+      font-family: 'Georgia', serif;
+    }
+
+    .card-button {
       background: linear-gradient(145deg, 
-        rgba(10, 120, 0, 0.95), 
-        rgba(8, 90, 0, 0.85));
+        rgba(200, 0, 0, 0.9), 
+        rgba(150, 0, 0, 0.8));
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
       box-shadow: 
-        0 12px 35px rgba(0, 120, 0, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.2),
-        0 0 0 2px rgba(255, 255, 255, 0.1);
+        0 5px 20px rgba(200, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
-    .btn-wrapper:nth-child(2) button:hover {
-      box-shadow: 
-        0 25px 50px rgba(0, 180, 0, 0.45),
-        0 0 60px rgba(100, 255, 100, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.3),
-        0 0 0 3px rgba(255, 255, 255, 0.15);
-    }
-
-    /* Terceiro botão - Dourado */
-    .btn-wrapper:nth-child(3) button {
+    .card-button:hover {
       background: linear-gradient(145deg, 
-        rgba(220, 170, 0, 0.95), 
-        rgba(190, 140, 0, 0.85));
+        rgba(255, 0, 0, 0.9), 
+        rgba(200, 0, 0, 0.8));
+      transform: translateY(-3px);
       box-shadow: 
-        0 12px 35px rgba(220, 170, 0, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.2),
-        0 0 0 2px rgba(255, 255, 255, 0.1);
+        0 10px 30px rgba(255, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
 
-    .btn-wrapper:nth-child(3) button:hover {
-      box-shadow: 
-        0 25px 50px rgba(255, 210, 0, 0.45),
-        0 0 60px rgba(255, 230, 100, 0.35),
-        inset 0 2px 0 rgba(255, 255, 255, 0.3),
-        0 0 0 3px rgba(255, 255, 255, 0.15);
+    /* Cartões com cores diferentes */
+    .function-card:nth-child(1) .card-icon { color: #ff0000; }
+    .function-card:nth-child(2) .card-icon { color: #00ff00; }
+    .function-card:nth-child(3) .card-icon { color: #ffff00; }
+    .function-card:nth-child(4) .card-icon { color: #00ffff; }
+
+    .function-card:nth-child(2) .card-button {
+      background: linear-gradient(145deg, 
+        rgba(0, 150, 0, 0.9), 
+        rgba(0, 120, 0, 0.8));
+      box-shadow: 0 5px 20px rgba(0, 150, 0, 0.3);
     }
 
-    /* Efeito de fios caídos das luzes */
-    .light-drop {
+    .function-card:nth-child(2) .card-button:hover {
+      background: linear-gradient(145deg, 
+        rgba(0, 200, 0, 0.9), 
+        rgba(0, 150, 0, 0.8));
+      box-shadow: 0 10px 30px rgba(0, 200, 0, 0.4);
+    }
+
+    .function-card:nth-child(3) .card-button {
+      background: linear-gradient(145deg, 
+        rgba(255, 165, 0, 0.9), 
+        rgba(220, 140, 0, 0.8));
+      box-shadow: 0 5px 20px rgba(255, 165, 0, 0.3);
+    }
+
+    .function-card:nth-child(3) .card-button:hover {
+      background: linear-gradient(145deg, 
+        rgba(255, 200, 0, 0.9), 
+        rgba(255, 165, 0, 0.8));
+      box-shadow: 0 10px 30px rgba(255, 200, 0, 0.4);
+    }
+
+    .function-card:nth-child(4) .card-button {
+      background: linear-gradient(145deg, 
+        rgba(0, 150, 255, 0.9), 
+        rgba(0, 120, 200, 0.8));
+      box-shadow: 0 5px 20px rgba(0, 150, 255, 0.3);
+    }
+
+    .function-card:nth-child(4) .card-button:hover {
+      background: linear-gradient(145deg, 
+        rgba(0, 200, 255, 0.9), 
+        rgba(0, 150, 200, 0.8));
+      box-shadow: 0 10px 30px rgba(0, 200, 255, 0.4);
+    }
+
+    /* RODAPÉ COM MENSAGEM NATALINA */
+    .footer-message {
       position: absolute;
-      top: 70px;
-      width: 1px;
-      height: 30px;
-      background: linear-gradient(to bottom,
-        rgba(255, 255, 255, 0.5),
-        transparent
-      );
-      z-index: 2;
-    }
-
-    /* Mensagem natalina */
-    .christmas-message {
-      position: absolute;
-      bottom: 40px;
-      color: rgba(255, 255, 255, 0.8);
+      bottom: 30px;
+      color: rgba(255, 255, 255, 0.9);
       font-size: 16px;
       text-align: center;
-      text-transform: none;
       letter-spacing: 3px;
       z-index: 3;
-      animation: message-pulse 4s ease-in-out infinite;
+      animation: message-pulse 5s ease-in-out infinite;
       font-family: 'Georgia', serif;
       font-style: italic;
-      text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+      text-shadow: 
+        0 0 15px rgba(255, 0, 0, 0.4),
+        0 0 25px rgba(0, 255, 0, 0.3);
+      padding: 15px 30px;
+      background: rgba(10, 30, 50, 0.4);
+      border-radius: 50px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Animações */
+    /* ANIMAÇÕES */
     @keyframes twinkle {
       0%, 100% { 
         opacity: 0.4; 
@@ -347,46 +395,54 @@
       }
     }
 
-    @keyframes logo-glow {
+    @keyframes light-blink-top {
       0%, 100% { 
-        filter: 
-          drop-shadow(0 0 15px rgba(255, 0, 0, 0.4))
-          drop-shadow(0 0 25px rgba(0, 255, 0, 0.3))
-          drop-shadow(0 0 35px rgba(0, 0, 255, 0.2));
-      }
-      33% { 
-        filter: 
-          drop-shadow(0 0 20px rgba(255, 0, 0, 0.5))
-          drop-shadow(0 0 30px rgba(0, 255, 0, 0.4))
-          drop-shadow(0 0 40px rgba(0, 0, 255, 0.3));
-      }
-      66% { 
-        filter: 
-          drop-shadow(0 0 18px rgba(255, 100, 0, 0.5))
-          drop-shadow(0 0 28px rgba(100, 255, 0, 0.4))
-          drop-shadow(0 0 38px rgba(0, 100, 255, 0.3));
-      }
-    }
-
-    @keyframes light-blink {
-      0%, 100% { 
-        opacity: 0.9;
+        opacity: 0.8;
         transform: translate(-50%, -50%) scale(1);
       }
       50% { 
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.15);
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 
+          0 0 30px currentColor,
+          0 0 60px currentColor,
+          inset 0 0 20px rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    @keyframes light-blink-bottom {
+      0%, 100% { 
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      50% { 
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+    }
+
+    @keyframes title-glow {
+      0%, 100% { 
+        text-shadow: 
+          0 0 10px rgba(255, 0, 0, 0.5),
+          0 0 20px rgba(0, 255, 0, 0.3);
+      }
+      50% { 
+        text-shadow: 
+          0 0 20px rgba(255, 0, 0, 0.7),
+          0 0 40px rgba(0, 255, 0, 0.5),
+          0 0 60px rgba(0, 0, 255, 0.3);
       }
     }
 
     @keyframes message-pulse {
       0%, 100% { 
-        opacity: 0.6;
-        letter-spacing: 3px;
+        opacity: 0.7;
+        transform: scale(1);
       }
       50% { 
         opacity: 1;
-        letter-spacing: 4px;
+        transform: scale(1.05);
       }
     }
 
@@ -401,95 +457,101 @@
       }
     }
 
-    @keyframes light-drop-sway {
-      0%, 100% { 
-        transform: translateX(0);
-      }
-      50% { 
-        transform: translateX(3px);
-      }
-    }
-
-    /* Responsividade */
+    /* RESPONSIVIDADE */
     @media (max-width: 1024px) {
-      .light-arch {
-        width: 95%;
-        height: 120px;
+      .functions-container {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 800px;
       }
       
-      .logo {
-        max-width: 400px;
+      .light-arch-top {
+        height: 100px;
       }
       
-      .btn-container {
-        max-width: 600px;
-        gap: 25px;
+      .light-arch-bottom {
+        height: 60px;
+        bottom: 100px;
+      }
+      
+      .header-title {
+        font-size: 28px;
       }
     }
 
     @media (max-width: 768px) {
-      .btn-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
+      .functions-container {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        gap: 25px;
       }
       
-      .btn-wrapper {
-        width: 100%;
-        max-width: 320px;
+      .header-container {
+        padding: 20px 30px;
+        margin-bottom: 40px;
       }
       
-      .logo {
-        max-width: 320px;
+      .header-title {
+        font-size: 24px;
       }
       
-      .logo-container {
-        margin-bottom: 60px;
-        padding: 20px;
+      .header-subtitle {
+        font-size: 16px;
       }
       
-      .light-arch {
-        height: 100px;
+      .function-card {
+        padding: 30px 20px;
       }
       
-      .light {
-        width: 20px;
-        height: 20px;
+      .light-arch-top {
+        height: 80px;
       }
       
-      button {
-        padding: 22px 40px;
-        font-size: 18px;
+      .light-top {
+        width: 22px;
+        height: 22px;
       }
       
-      .christmas-message {
+      .footer-message {
         font-size: 14px;
-        bottom: 30px;
+        padding: 12px 25px;
+        bottom: 20px;
       }
     }
 
     @media (max-width: 480px) {
-      .logo {
-        max-width: 280px;
+      .header-title {
+        font-size: 20px;
       }
       
-      button {
-        padding: 20px 30px;
-        font-size: 16px;
+      .header-subtitle {
+        font-size: 14px;
       }
       
-      .light-arch {
-        height: 80px;
+      .card-title {
+        font-size: 18px;
       }
       
-      .light {
-        width: 16px;
-        height: 16px;
+      .card-description {
+        font-size: 13px;
       }
       
-      .christmas-message {
+      .card-button {
+        padding: 10px 25px;
+        font-size: 14px;
+      }
+      
+      .light-arch-top {
+        height: 60px;
+      }
+      
+      .light-top {
+        width: 18px;
+        height: 18px;
+      }
+      
+      .footer-message {
         font-size: 12px;
-        bottom: 25px;
+        letter-spacing: 2px;
       }
     }
   </style>
@@ -501,178 +563,179 @@
   <!-- Flocos de neve -->
   <div class="snow-container" id="snowContainer"></div>
   
-  <!-- Arco de luzes de natal -->
-  <div class="light-arch" id="lightArch">
-    <div class="light-string">
-      <div class="light-cord"></div>
-      <!-- Luzes serão adicionadas via JavaScript -->
+  <!-- Arco de luzes superior -->
+  <div class="light-arch-top" id="lightArchTop">
+    <div class="light-string-top" id="lightStringTop">
+      <div class="light-cord-top"></div>
     </div>
   </div>
   
-  <!-- Logotipo -->
-  <div class="logo-container">
-    <img src="logo.png" alt="Logo da Empresa" class="logo" />
+  <!-- Arco de luzes inferior -->
+  <div class="light-arch-bottom" id="lightArchBottom">
+    <div class="light-string-bottom" id="lightStringBottom"></div>
   </div>
   
-  <!-- Botões -->
-  <div class="btn-container">
-    <div class="btn-wrapper">
-      <button onclick="window.location.href='tanque.html'">
-        MEDIDA DE TANQUE
-      </button>
-      <div class="btn-glow"></div>
+  <!-- Cabeçalho -->
+  <div class="header-container">
+    <h1 class="header-title">🎄 Painel Administrativo 🎅</h1>
+    <p class="header-subtitle">Gerencie suas operações com a magia do Natal</p>
+  </div>
+  
+  <!-- Funções do sistema -->
+  <div class="functions-container">
+    <div class="function-card" onclick="window.location.href='relatorios.html'">
+      <span class="card-icon">📊</span>
+      <h3 class="card-title">Relatórios</h3>
+      <p class="card-description">Acesse relatórios detalhados e análises de desempenho com gráficos interativos.</p>
+      <button class="card-button">Visualizar Relatórios</button>
     </div>
     
-    <div class="btn-wrapper">
-      <button onclick="window.location.href='sorteio.html'">
-        SORTEIO DE TAREFAS
-      </button>
-      <div class="btn-glow"></div>
+    <div class="function-card" onclick="window.location.href='configuracoes.html'">
+      <span class="card-icon">⚙️</span>
+      <h3 class="card-title">Configurações</h3>
+      <p class="card-description">Configure preferências, permissões e personalizações do sistema.</p>
+      <button class="card-button">Acessar Configurações</button>
     </div>
     
-    <div class="btn-wrapper">
-      <button onclick="window.location.href='planilha.html'">
-        PLANILHA DE LUBRIFICANTES
-      </button>
-      <div class="btn-glow"></div>
+    <div class="function-card" onclick="window.location.href='usuarios.html'">
+      <span class="card-icon">👥</span>
+      <h3 class="card-title">Gerenciar Usuários</h3>
+      <p class="card-description">Administre contas, permissões e acessos dos usuários do sistema.</p>
+      <button class="card-button">Gerenciar Usuários</button>
+    </div>
+    
+    <div class="function-card" onclick="window.location.href='dashboard.html'">
+      <span class="card-icon">📈</span>
+      <h3 class="card-title">Dashboard</h3>
+      <p class="card-description">Painel com métricas em tempo real e indicadores de performance.</p>
+      <button class="card-button">Abrir Dashboard</button>
     </div>
   </div>
   
   <!-- Mensagem natalina -->
-  <div class="christmas-message">
-    🎄 Feliz Natal! Que a paz e alegria iluminem seus dias 🎅
+  <div class="footer-message">
+    ✨ Que a paz e prosperidade do Natal estejam com você! ✨
   </div>
 
   <script>
     // Criar estrelas
     const nightSky = document.getElementById('nightSky');
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 250; i++) {
       const star = document.createElement('div');
       star.classList.add('star');
-      star.style.width = Math.random() * 3 + 1 + 'px';
+      star.style.width = Math.random() * 4 + 1 + 'px';
       star.style.height = star.style.width;
       star.style.left = Math.random() * 100 + '%';
       star.style.top = Math.random() * 100 + '%';
-      star.style.opacity = Math.random() * 0.6 + 0.4;
-      star.style.animationDelay = Math.random() * 5 + 's';
-      star.style.animationDuration = Math.random() * 3 + 2 + 's';
+      star.style.opacity = Math.random() * 0.7 + 0.3;
+      star.style.animationDelay = Math.random() * 6 + 's';
+      star.style.animationDuration = Math.random() * 4 + 3 + 's';
       nightSky.appendChild(star);
     }
 
     // Criar flocos de neve
     const snowContainer = document.getElementById('snowContainer');
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 120; i++) {
       const flake = document.createElement('div');
       flake.classList.add('snowflake');
       
-      const size = Math.random() * 8 + 4;
+      const size = Math.random() * 10 + 5;
       flake.style.width = size + 'px';
       flake.style.height = size + 'px';
       flake.style.left = Math.random() * 100 + '%';
       flake.style.top = Math.random() * 100 + '%';
-      flake.style.opacity = Math.random() * 0.6 + 0.4;
+      flake.style.opacity = Math.random() * 0.7 + 0.3;
       
-      const duration = Math.random() * 25 + 15;
-      const delay = Math.random() * 20;
+      const duration = Math.random() * 30 + 20;
+      const delay = Math.random() * 25;
       flake.style.animation = `snow-fall ${duration}s linear infinite`;
       flake.style.animationDelay = delay + 's';
       
       snowContainer.appendChild(flake);
     }
 
-    // Criar arco de luzes
-    const lightString = document.querySelector('.light-string');
-    const archWidth = lightString.offsetWidth;
-    const lightCount = 15;
+    // Configurações das luzes
     const lightColors = [
-      '#ff0000', // Vermelho
-      '#00ff00', // Verde
-      '#ffff00', // Amarelo
-      '#ff00ff', // Rosa
-      '#00ffff', // Azul claro
-      '#ff8800'  // Laranja
+      '#ff0000', '#00ff00', '#ffff00', 
+      '#ff00ff', '#00ffff', '#ff8800',
+      '#ff00aa', '#aa00ff', '#00ffaa'
     ];
 
-    // Criar corda curva
-    const cord = document.querySelector('.light-cord');
-    cord.style.height = '3px';
-    cord.style.background = `linear-gradient(90deg,
-      #555 0%,
-      #777 25%,
-      #999 50%,
-      #777 75%,
-      #555 100%
-    )`;
+    // Criar arco de luzes superior
+    const lightStringTop = document.getElementById('lightStringTop');
+    const topArchWidth = lightStringTop.offsetWidth;
+    const topLightCount = 21;
 
-    // Adicionar luzes em arco
-    for (let i = 0; i < lightCount; i++) {
+    for (let i = 0; i < topLightCount; i++) {
       const light = document.createElement('div');
-      light.classList.add('light');
+      light.classList.add('light-top');
       
-      // Posicionar em arco (curva parabólica)
-      const position = i / (lightCount - 1);
-      const x = position * archWidth;
-      const y = 40 * Math.sin(position * Math.PI); // Arco senoidal
+      // Posicionar em arco superior (mais acentuado)
+      const position = i / (topLightCount - 1);
+      const x = position * topArchWidth;
+      const y = 50 * Math.sin(position * Math.PI); // Arco mais alto
       
       light.style.left = x + 'px';
-      light.style.top = (15 + y) + 'px'; // 15px é a posição base
+      light.style.top = (10 + y) + 'px';
       
       const colorIndex = i % lightColors.length;
       light.style.backgroundColor = lightColors[colorIndex];
       light.style.color = lightColors[colorIndex];
-      light.style.animationDelay = (i * 0.2) + 's';
+      light.style.animationDelay = (i * 0.15) + 's';
       
-      // Adicionar fio caído em algumas luzes
-      if (Math.random() > 0.6) {
-        const drop = document.createElement('div');
-        drop.classList.add('light-drop');
-        drop.style.left = x + 'px';
-        drop.style.top = (40 + y) + 'px';
-        drop.style.height = (Math.random() * 40 + 20) + 'px';
-        drop.style.animation = `light-drop-sway ${Math.random() * 2 + 1}s ease-in-out infinite`;
-        drop.style.animationDelay = (i * 0.3) + 's';
-        lightString.appendChild(drop);
-      }
-      
-      lightString.appendChild(light);
+      lightStringTop.appendChild(light);
     }
 
-    // Efeito de interação nas luzes
-    const lights = document.querySelectorAll('.light');
-    lights.forEach((light, index) => {
-      light.addEventListener('mouseenter', () => {
-        light.style.transform = 'translate(-50%, -50%) scale(1.5)';
-        light.style.filter = 'brightness(1.5)';
-        light.style.transition = 'all 0.3s ease';
-      });
-      
-      light.addEventListener('mouseleave', () => {
-        light.style.transform = 'translate(-50%, -50%) scale(1)';
-        light.style.filter = 'brightness(1)';
-      });
-    });
+    // Criar arco de luzes inferior
+    const lightStringBottom = document.getElementById('lightStringBottom');
+    const bottomArchWidth = lightStringBottom.offsetWidth;
+    const bottomLightCount = 17;
 
-    // Efeito de piscar aleatório nas luzes
+    for (let i = 0; i < bottomLightCount; i++) {
+      const light = document.createElement('div');
+      light.classList.add('light-bottom');
+      
+      // Posicionar em arco inferior (mais suave)
+      const position = i / (bottomLightCount - 1);
+      const x = position * bottomArchWidth;
+      const y = 20 * Math.sin(position * Math.PI);
+      
+      light.style.left = x + 'px';
+      light.style.top = (15 + y) + 'px';
+      
+      const colorIndex = (i + 3) % lightColors.length; // Deslocar cores
+      light.style.backgroundColor = lightColors[colorIndex];
+      light.style.color = lightColors[colorIndex];
+      light.style.animationDelay = (i * 0.2) + 's';
+      
+      lightStringBottom.appendChild(light);
+    }
+
+    // Efeitos interativos
+    const allLights = document.querySelectorAll('.light-top, .light-bottom');
+    
+    // Efeito de onda nas luzes superiores
+    let waveTop = 0;
     setInterval(() => {
-      lights.forEach(light => {
-        if (Math.random() > 0.8) {
-          const originalOpacity = light.style.opacity;
-          light.style.opacity = '0.3';
-          light.style.transform = 'translate(-50%, -50%) scale(0.8)';
-          
-          setTimeout(() => {
-            light.style.opacity = originalOpacity || '0.9';
-            light.style.transform = 'translate(-50%, -50%) scale(1)';
-          }, 200);
+      const topLights = document.querySelectorAll('.light-top');
+      topLights.forEach((light, index) => {
+        const distance = Math.abs(index - waveTop);
+        if (distance < 4) {
+          const scale = 1.3 - (distance * 0.1);
+          light.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        } else {
+          light.style.transform = 'translate(-50%, -50%) scale(1)';
         }
       });
-    }, 500);
+      waveTop = (waveTop + 1) % topLightCount;
+    }, 120);
 
-    // Efeito de onda nas luzes
-    let wavePosition = 0;
+    // Efeito de onda nas luzes inferiores (mais lento)
+    let waveBottom = 0;
     setInterval(() => {
-      lights.forEach((light, index) => {
-        const distance = Math.abs(index - wavePosition);
+      const bottomLights = document.querySelectorAll('.light-bottom');
+      bottomLights.forEach((light, index) => {
+        const distance = Math.abs(index - waveBottom);
         if (distance < 3) {
           const scale = 1.2 - (distance * 0.1);
           light.style.transform = `translate(-50%, -50%) scale(${scale})`;
@@ -680,95 +743,134 @@
           light.style.transform = 'translate(-50%, -50%) scale(1)';
         }
       });
-      
-      wavePosition = (wavePosition + 1) % lightCount;
-    }, 150);
+      waveBottom = (waveBottom + 1) % bottomLightCount;
+    }, 180);
 
-    // Efeito de confete ao clicar nos botões
-    document.querySelectorAll('button').forEach(button => {
+    // Efeito de brilho nos cartões ao passar o mouse
+    const cards = document.querySelectorAll('.function-card');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        const icon = card.querySelector('.card-icon');
+        const originalColor = icon.style.color;
+        icon.style.textShadow = `0 0 30px ${originalColor}, 0 0 60px ${originalColor}`;
+        icon.style.transform = 'scale(1.2)';
+        icon.style.transition = 'all 0.3s ease';
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        const icon = card.querySelector('.card-icon');
+        icon.style.textShadow = '0 0 10px currentColor';
+        icon.style.transform = 'scale(1)';
+      });
+    });
+
+    // Efeito de confete nos botões
+    const buttons = document.querySelectorAll('.card-button');
+    buttons.forEach(button => {
       button.addEventListener('click', function(e) {
-        // Criar efeito de partículas coloridas
-        for (let i = 0; i < 20; i++) {
-          const particle = document.createElement('div');
-          particle.style.position = 'fixed';
-          particle.style.width = '8px';
-          particle.style.height = '8px';
-          particle.style.backgroundColor = lightColors[Math.floor(Math.random() * lightColors.length)];
-          particle.style.borderRadius = '50%';
-          particle.style.left = e.clientX + 'px';
-          particle.style.top = e.clientY + 'px';
-          particle.style.pointerEvents = 'none';
-          particle.style.zIndex = '1000';
-          particle.style.opacity = '0.9';
-          particle.style.boxShadow = '0 0 10px currentColor';
-          
-          document.body.appendChild(particle);
-          
-          const angle = Math.random() * Math.PI * 2;
-          const speed = 2 + Math.random() * 3;
-          const vx = Math.cos(angle) * speed;
-          const vy = Math.sin(angle) * speed;
-          
-          let posX = e.clientX;
-          let posY = e.clientY;
-          let opacity = 0.9;
-          
-          const animate = () => {
-            posX += vx;
-            posY += vy;
-            vy += 0.08;
-            opacity -= 0.04;
+        e.stopPropagation();
+        
+        // Criar confetes
+        for (let i = 0; i < 25; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.width = '10px';
+            confetti.style.height = '10px';
+            confetti.style.backgroundColor = lightColors[Math.floor(Math.random() * lightColors.length)];
+            confetti.style.borderRadius = '50%';
+            confetti.style.left = e.clientX + 'px';
+            confetti.style.top = e.clientY + 'px';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = '1000';
+            confetti.style.opacity = '0.9';
+            confetti.style.boxShadow = '0 0 15px currentColor';
             
-            particle.style.left = posX + 'px';
-            particle.style.top = posY + 'px';
-            particle.style.opacity = opacity;
-            particle.style.transform = `rotate(${posX + posY}deg)`;
+            document.body.appendChild(confetti);
             
-            if (opacity > 0) {
-              requestAnimationFrame(animate);
-            } else {
-              particle.remove();
-            }
-          };
-          
-          animate();
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 3 + Math.random() * 4;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+            
+            let posX = e.clientX;
+            let posY = e.clientY;
+            let opacity = 0.9;
+            let rotation = 0;
+            
+            const animate = () => {
+              posX += vx;
+              posY += vy;
+              vy += 0.1;
+              opacity -= 0.03;
+              rotation += 10;
+              
+              confetti.style.left = posX + 'px';
+              confetti.style.top = posY + 'px';
+              confetti.style.opacity = opacity;
+              confetti.style.transform = `rotate(${rotation}deg)`;
+              
+              if (opacity > 0) {
+                requestAnimationFrame(animate);
+              } else {
+                confetti.remove();
+              }
+            };
+            
+            animate();
+          }, i * 30);
         }
         
-        // Fazer as luzes piscarem em sequência
-        lights.forEach((light, index) => {
+        // Fazer luzes piscarem
+        allLights.forEach((light, index) => {
           setTimeout(() => {
             const originalColor = light.style.backgroundColor;
             light.style.backgroundColor = '#ffffff';
-            light.style.boxShadow = '0 0 30px #ffffff, 0 0 60px #ffffff';
+            light.style.boxShadow = '0 0 40px #ffffff, 0 0 80px #ffffff';
             
             setTimeout(() => {
               light.style.backgroundColor = originalColor;
               light.style.boxShadow = '';
-            }, 100);
-          }, index * 50);
+            }, 80);
+          }, index * 20);
         });
       });
     });
 
-    // Efeito de brilho no arco
-    const lightArch = document.getElementById('lightArch');
-    setInterval(() => {
-      const glowColor = lightColors[Math.floor(Math.random() * lightColors.length)];
-      lightArch.style.boxShadow = `0 0 100px ${glowColor}40`;
-      
-      setTimeout(() => {
-        lightArch.style.boxShadow = '';
-      }, 300);
-    }, 3000);
+    // Efeito de clique nos cartões inteiros
+    cards.forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('card-button')) {
+          const button = card.querySelector('.card-button');
+          button.click();
+        }
+      });
+    });
 
-    // Reduzir animações em dispositivos móveis para melhor performance
+    // Efeito de brilho aleatório nas luzes
+    setInterval(() => {
+      allLights.forEach(light => {
+        if (Math.random() > 0.85) {
+          const originalBoxShadow = light.style.boxShadow;
+          light.style.boxShadow = originalBoxShadow.replace(
+            /rgba?\([^)]+\)/g,
+            'rgba(255, 255, 255, 0.9)'
+          );
+          
+          setTimeout(() => {
+            light.style.boxShadow = originalBoxShadow;
+          }, 300);
+        }
+      });
+    }, 1000);
+
+    // Reduzir animações em dispositivos móveis
     if (/Mobi|Android/i.test(navigator.userAgent)) {
       const snowflakes = document.querySelectorAll('.snowflake');
-      snowflakes.forEach(flake => flake.style.animationDuration = '40s');
+      snowflakes.forEach(flake => flake.style.animationDuration = '50s');
       
-      // Reduzir número de partículas
-      lights.forEach(light => {
-        light.style.animationDuration = '2s';
+      allLights.forEach(light => {
+        light.style.animationDuration = '3s';
       });
     }
   </script>
