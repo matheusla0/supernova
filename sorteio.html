@@ -117,17 +117,6 @@
     let hashOriginal = '';
     let timestampSorteio = '';
 
-    // Variáveis para controle do Kelton
-    const variacoesKelton = ['KELTON', 'KELTOM', 'kelton', 'keltom', 'Kelton', 'Keltom'];
-    
-    // Todas as variações do horário 12:00 que devem ser bloqueadas para o Kelton
-    const horariosProibidosKelton = [
-      '12:00', '12:00 ', '12:00h', '12:00 H', '12:00H',
-      '12h', '12h ', '12 h', '12 H', '12H',
-      '12horas', '12 horas', '12 Horas', '12Horas',
-      '12', '12 ', ' 12:00', ' 12h', ' 12'
-    ];
-
     // Função para gerar hash de segurança
     function gerarHash(dados) {
       let hash = 0;
@@ -260,29 +249,28 @@
     function sortearTarefas() {
       let resultado = document.getElementById("resultado");
       
-      // Método mais aleatório: criar pares nome-tarefa e embaralhar
-      let pares = [];
+      // Método mais aleatório: criar múltiplos embaralhamentos consecutivos
+      let tarefasEmbaralhadas = [...tarefas];
+      let nomesEmbaralhados = [...nomes];
       
-      // Se houver mais tarefas que nomes, alguns farão mais de uma tarefa
-      // Se houver mais nomes que tarefas, algumas tarefas serão compartilhadas
-      let tarefasEmbaralhadas = shuffleArray([...tarefas]);
-      let nomesEmbaralhados = shuffleArray([...nomes]);
-      
-      let indexTarefa = 0;
-      
-      for (let nome of nomesEmbaralhados) {
-        if (indexTarefa >= tarefasEmbaralhadas.length) {
-          // Se acabaram as tarefas, recomeça a lista de tarefas
-          tarefasEmbaralhadas = shuffleArray([...tarefas]);
-          indexTarefa = 0;
-        }
-        
-        const tarefa = tarefasEmbaralhadas[indexTarefa];
-        pares.push({ nome, tarefa });
-        indexTarefa++;
+      // Aplicar múltiplos embaralhamentos para maior aleatoriedade
+      for (let i = 0; i < 5; i++) {
+        tarefasEmbaralhadas = shuffleArray(tarefasEmbaralhadas);
+        nomesEmbaralhados = shuffleArray(nomesEmbaralhados);
       }
       
-      // Embaralha os pares finais para mais aleatoriedade
+      let pares = [];
+      
+      // Distribuir tarefas de forma circular
+      for (let i = 0; i < nomesEmbaralhados.length; i++) {
+        const tarefaIndex = i % tarefasEmbaralhadas.length;
+        pares.push({
+          nome: nomesEmbaralhados[i],
+          tarefa: tarefasEmbaralhadas[tarefaIndex]
+        });
+      }
+      
+      // Embaralhar os pares finais mais uma vez
       pares = shuffleArray(pares);
       
       // Exibe os resultados com assinatura digital
@@ -309,17 +297,11 @@
         return;
       }
 
-      // Verifica se Kelton está na lista
-      const keltonIndex = nomes.findIndex(nome => 
-        variacoesKelton.includes(nome.toUpperCase())
-      );
-
       let horariosDisponiveis = [...horarios];
       let nomesParaSortear = [...nomes];
       
       // Ordena os horários em ordem crescente para exibição final
       horariosDisponiveis.sort((a, b) => {
-        // Converte horários para minutos para ordenação correta
         const minutosA = converterHorarioParaMinutos(a);
         const minutosB = converterHorarioParaMinutos(b);
         return minutosA - minutosB;
@@ -328,33 +310,14 @@
       let resultado = document.getElementById("resultado");
       let pares = [];
 
-      // Se Kelton está na lista, trata ele primeiro
-      if (keltonIndex !== -1) {
-        const kelton = nomesParaSortear.splice(keltonIndex, 1)[0];
-        
-        // Cria lista de horários disponíveis para Kelton (excluindo todos os horários proibidos)
-        const horariosParaKelton = horariosDisponiveis.filter(h => 
-          !horariosProibidosKelton.includes(h.trim())
-        );
-        
-        if (horariosParaKelton.length === 0) {
-          alert("NÃO HÁ HORÁRIOS DISPONÍVEIS PARA O KELTON (EXCLUINDO TODOS OS HORÁRIOS DE 12:00).");
-          return;
-        }
-
-        // Sorteia um horário aleatório para Kelton
-        const horarioKelton = horariosParaKelton[Math.floor(Math.random() * horariosParaKelton.length)];
-        
-        // Remove o horário escolhido da lista geral
-        horariosDisponiveis = horariosDisponiveis.filter(h => h !== horarioKelton);
-        
-        pares.push({ nome: kelton, horario: horarioKelton });
+      // Método completamente aleatório: embaralhar tudo
+      // Aplicar múltiplos embaralhamentos para maior aleatoriedade
+      for (let i = 0; i < 5; i++) {
+        nomesParaSortear = shuffleArray(nomesParaSortear);
+        horariosDisponiveis = shuffleArray(horariosDisponiveis);
       }
-
-      // Embaralha os nomes restantes
-      nomesParaSortear = shuffleArray(nomesParaSortear);
       
-      // Distribui os horários restantes para os outros colaboradores
+      // Distribuir horários para todos os colaboradores (incluindo Kelton)
       for (let i = 0; i < nomesParaSortear.length; i++) {
         pares.push({ 
           nome: nomesParaSortear[i], 
@@ -362,7 +325,7 @@
         });
       }
 
-      // Ordena os pares por horário para exibição
+      // Ordenar os pares por horário para exibição organizada
       pares.sort((a, b) => {
         const minutosA = converterHorarioParaMinutos(a.horario);
         const minutosB = converterHorarioParaMinutos(b.horario);
@@ -389,10 +352,8 @@
 
     // Função para converter qualquer formato de horário para minutos
     function converterHorarioParaMinutos(horario) {
-      // Remove espaços e converte para minúsculas
       const horarioLimpo = horario.trim().toLowerCase();
       
-      // Tenta extrair horas e minutos
       let horas, minutos = 0;
       
       // Verifica formato HH:MM
@@ -401,13 +362,13 @@
         horas = parseInt(matchHHMM[1]);
         minutos = parseInt(matchHHMM[2]);
       } 
-      // Verifica formato com "h" (ex: 12h, 12 h)
+      // Verifica formato com "h"
       else {
         const matchH = horarioLimpo.match(/^(\d{1,2})\s*h/);
         if (matchH) {
           horas = parseInt(matchH[1]);
         }
-        // Se não encontrar padrão, tenta pegar apenas números
+        // Tenta pegar apenas números
         else {
           const apenasNumeros = horarioLimpo.match(/\d+/);
           if (apenasNumeros) {
@@ -422,10 +383,8 @@
     }
 
     function shuffleArray(array) {
-      // Algoritmo Fisher-Yates moderno para melhor aleatoriedade
       const newArray = [...array];
       for (let i = newArray.length - 1; i > 0; i--) {
-        // Usando crypto.getRandomValues para maior aleatoriedade quando disponível
         const j = Math.floor(getRandom() * (i + 1));
         [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
       }
@@ -433,14 +392,14 @@
     }
 
     function getRandom() {
-      // Tenta usar crypto.getRandomValues para melhor aleatoriedade
+      // Usa crypto.getRandomValues para maior aleatoriedade
       if (window.crypto && window.crypto.getRandomValues) {
         const array = new Uint32Array(1);
         window.crypto.getRandomValues(array);
         return array[0] / (0xFFFFFFFF + 1);
       }
-      // Fallback para Math.random()
-      return Math.random();
+      // Fallback para Math.random() com timestamp para mais variação
+      return (Math.random() + Date.now() % 1000 / 1000) % 1;
     }
 
     function finalizarSorteio() {
@@ -471,7 +430,6 @@
     }
 
     function imprimirPagina() { 
-      // Verificar integridade antes de imprimir
       if (sorteioFinalizado && !verificarIntegridade()) {
         alert('ALTERAÇÃO DETECTADA! O SORTEIO FOI COMPROMETIDO. REINICIE O SORTEIO.');
         return;
