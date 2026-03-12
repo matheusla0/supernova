@@ -978,32 +978,40 @@
     </div>
 
     <script>
-        // Dados iniciais - ADICIONADO O NOVO LUBRIFICANTE
+        // Dados iniciais - TODOS OS LUBRIFICANTES ADICIONADOS
         const initialProducts = [
-            { name: "ADITIVO RADIADOR ROOL TECH", value: 16.50 }, 
+            { name: "ADITIVO RADIADOR ROOL TECH", value: 16.50 },
             { name: "DISCO TACÓGRAFO", value: 48.00 },
-            { name: "LUBRAX ESSENTIAL 2T 200ml (VERDE)", value: 11.00 }, 
+            { name: "LUBRAX ESSENTIAL 2T 200ml (VERDE)", value: 11.00 },
             { name: "LUBRAX ESSENTIAL 2T 500ml (VERDE)", value: 23.00 },
-            { name: "LUBRAX ESSENTIAL 2T FC 200ml (AMARELO)", value: 16.00 }, 
+            { name: "LUBRAX ESSENTIAL 2T FC 200ml (AMARELO)", value: 16.00 },
             { name: "LUBRAX ESSENTIAL 2T FC 500ml (AMARELO)", value: 31.00 },
-            { name: "FLUIDO DE FREIO HI TECH DOT 3 200ml", value: 12.00 }, 
+            { name: "FLUIDO DE FREIO HI TECH DOT 3 200ml", value: 12.00 },
             { name: "FLUIDO DE FREIO HI TECH DOT 4 200ml", value: 12.00 },
-            { name: "STIHL", value: 65.00 }, 
-            { name: "SPRINT F900 10W40 4T", value: 42.00 }, 
+            { name: "STIHL", value: 65.00 },
+            { name: "SPRINT F900 10W40 4T", value: 42.00 },
             { name: "SPRINTA F500 10W30", value: 35.00 },
-            { name: "SPRINTA F300 20W50", value: 30.00 }, 
-            { name: "URANIA 15W40 1 LITRO", value: 45.00 }, 
+            { name: "SPRINTA F300 20W50", value: 30.00 },
+            { name: "URANIA 15W40 1 LITRO", value: 45.00 },
             { name: "URANIA 15W40 4 LITROS", value: 125.00 },
-            { name: "KARTER TASA SUFIXO A", value: 28.00 }, 
-            { name: "SYNTIUM 800 10W40", value: 50.00 }, 
+            { name: "KARTER TASA SUFIXO A", value: 28.00 },
+            { name: "SYNTIUM 800 10W40", value: 50.00 },
             { name: "SYNTIUM 20W50", value: 28.00 },
-            { name: "SELENIA PERFORM 5W40", value: 43.00 }, 
-            { name: "SELENIA 5W30", value: 36.00 }, 
+            { name: "SELENIA PERFORM 5W40", value: 43.00 },
+            { name: "SELENIA 5W30", value: 36.00 },
             { name: "SELENIA K", value: 32.00 },
-            { name: "BARDAHL MAX 200ml", value: 25.00 }, 
-            { name: "GÁS", value: 119.00 }, 
+            { name: "BARDAHL MAX 200ml", value: 25.00 },
+            { name: "GÁS", value: 119.00 },
             { name: "GÁS CASCO", value: 200.00 },
-            { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 } // ADICIONADO AQUI
+            { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 },
+            // NOVOS LUBRIFICANTES ADICIONADOS ABAIXO
+            { name: "LIMPA PARA BRISAS 100ml", value: 12.00 },
+            { name: "RADNAQ ULTRA PS 1 LITRO", value: 25.00 },
+            { name: "FLUIDO DE FREIO RADNAQ DOT 3 200ml", value: 10.00 },
+            { name: "FLUIDO DE FREIO RADNAQ DOT 4 500ml", value: 20.00 },
+            { name: "FLUIDO DE FREIO RADNAQ DOT 4 200ml", value: 10.00 },
+            { name: "ANTIRUST ADITIVO 1 LITRO", value: 20.00 },
+            { name: "KOUBE TOP CLEAN FLEX 250ml", value: 23.00 }
         ];
 
         // Usuários administradores
@@ -1239,15 +1247,28 @@
                     }));
                     console.log('Produtos carregados do banco:', products.length);
                     
-                    // Verifica se o novo produto está presente
-                    const hasNewProduct = products.some(p => p.name === "ADITIVO GASOLINA RADNAQ");
-                    if (!hasNewProduct) {
-                        console.log('Adicionando ADITIVO GASOLINA RADNAQ...');
-                        try {
-                            await addItem(STORE_PRODUCTS, { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
-                            products.push({ name: "ADITIVO GASOLINA RADNAQ", value: 14.00 });
-                        } catch (error) {
-                            console.warn('Erro ao adicionar novo produto:', error);
+                    // Verifica se os novos produtos estão presentes
+                    const novosProdutos = [
+                        "LIMPA PARA BRISAS 100ml",
+                        "RADNAQ ULTRA PS 1 LITRO",
+                        "FLUIDO DE FREIO RADNAQ DOT 3 200ml",
+                        "FLUIDO DE FREIO RADNAQ DOT 4 500ml",
+                        "FLUIDO DE FREIO RADNAQ DOT 4 200ml",
+                        "ANTIRUST ADITIVO 1 LITRO",
+                        "KOUBE TOP CLEAN FLEX 250ml"
+                    ];
+                    
+                    for (const novoProduto of novosProdutos) {
+                        const hasProduct = products.some(p => p.name === novoProduto);
+                        if (!hasProduct) {
+                            console.log(`Adicionando ${novoProduto}...`);
+                            const valor = initialProducts.find(p => p.name === novoProduto).value;
+                            try {
+                                await addItem(STORE_PRODUCTS, { name: novoProduto, value: valor });
+                                products.push({ name: novoProduto, value: valor });
+                            } catch (error) {
+                                console.warn(`Erro ao adicionar ${novoProduto}:`, error);
+                            }
                         }
                     }
                 }
