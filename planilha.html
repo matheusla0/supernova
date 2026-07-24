@@ -6,17 +6,24 @@
     <title>Lubrificante - Sistema de Turnos</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
-        body { 
-            background: linear-gradient(to right, #e3f2fd, #fffde7); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            padding: 20px;
+        /* Reset e Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
         }
-        
-        /* Container principal centralizado */
+        body {
+            background: linear-gradient(to right, #e3f2fd, #fffde7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            font-size: 13px;
+        }
+
+        /* Auth Wrapper */
         .auth-wrapper {
             display: flex;
             justify-content: center;
@@ -24,715 +31,792 @@
             width: 100%;
             min-height: 100vh;
         }
-        
-        .container { 
-            width: 90vw; 
-            max-width: 500px; 
-            background: #ffffff; 
-            border-radius: 12px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
+
+        .container {
+            width: 95vw;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        
-        .login-container { 
-            background: white; 
-            padding: 50px 40px; 
-            border-radius: 16px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 450px; 
-            text-align: center; 
+
+        .login-container {
+            background: white;
+            padding: 30px 30px 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        .login-logo { 
-            max-width: 220px; 
-            height: auto; 
-            margin-bottom: 40px; 
+        .login-logo {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 24px;
         }
-        
-        .form-group { 
-            margin-bottom: 25px; 
-            text-align: left; 
+
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
             width: 100%;
         }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 10px; 
-            font-weight: 600; 
-            color: #1A355C; 
-            font-size: 15px;
-        }
-        .form-group input { 
-            width: 100%; 
-            padding: 14px 16px; 
-            border: 2px solid #1A355C; 
-            border-radius: 8px; 
-            background-color: #e3f2fd; 
-            color: #1A355C; 
-            font-weight: bold; 
-            font-size: 16px;
-        }
-        .form-group input:focus { 
-            outline: none; 
-            border-color: #1A355C; 
-            box-shadow: 0 0 0 3px rgba(26,53,92,0.1); 
-        }
-        
-        button { 
-            padding: 14px 24px; 
-            border: none; 
-            border-radius: 8px;
-            font-size: 16px; 
-            cursor: pointer; 
-            background-color: #1A355C;
-            color: #fff; 
-            transition: background 0.3s ease; 
-            font-weight: bold; 
-            width: 100%;
-            margin-top: 10px;
-        }
-        button:hover { background-color: #0F203A; }
-        
-        .toggle-forms { 
-            margin-top: 25px; 
-            text-align: center; 
-            width: 100%;
-        }
-        .toggle-forms button { 
-            background: none; 
-            color: #1A355C; 
-            text-decoration: underline; 
-            padding: 8px; 
-            width: auto; 
-            font-size: 15px;
-            margin: 0 auto;
-        }
-        .toggle-forms button:hover { background: none; color: #0F203A; }
-        
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(15,23,42,0.7); 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 1000; 
-        }
-        .modal-content { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 12px; 
-            width: 450px; 
-            max-width: 90%; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
-        }
-        .modal-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 25px; 
-            padding-bottom: 18px; 
-            border-bottom: 2px solid #e2e8f0; 
-        }
-        .close { 
-            font-size: 24px; 
-            cursor: pointer; 
-            color: #64748b; 
-        }
-        
-        .turn-selection { 
-            display: flex; 
-            justify-content: center; 
-            gap: 12px; 
-            margin-bottom: 25px; 
-        }
-        .turn-btn { 
-            padding: 12px 20px; 
-            font-size: 15px; 
-            border: 2px solid #1A355C;
-            background-color: #fff; 
-            color: #1A355C; 
-            border-radius: 8px;
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: background 0.3s;
-            flex: 1;
-        }
-        .turn-btn.active { 
-            background-color: #1A355C; 
-            color: white; 
-        }
-        
-        /* Estilos para o sistema principal */
-        #main-container { 
-            width: 95vw; 
-            height: 90vh; 
-            max-width: none; 
-            display: none;
-            flex-direction: column;
-        }
-        
-        header { 
-            background: linear-gradient(135deg, #1A355C, #0F203A); 
-            color: white; 
-            padding: 15px 25px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        .header-left h1 { 
-            font-size: 1.7rem; 
-            margin-bottom: 5px; 
-            font-weight: 700; 
-        }
-        .header-left .subtitle { 
-            font-size: 0.95rem; 
-            opacity: 0.9; 
-        }
-        .header-info { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-end; 
-            gap: 10px; 
-        }
-        .info-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-        }
-        .info-item span { 
-            font-weight: 600; 
-            font-size: 1.05rem; 
-        }
-        
-        .turn-controls { 
-            padding: 10px 25px; 
-            background: #f8fafc; 
-            border-bottom: 1px solid #e2e8f0; 
-            text-align: center; 
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
             font-weight: 600;
             color: #1A355C;
+            font-size: 13px;
         }
-        .controls { 
-            padding: 12px 25px; 
-            background: #f1f5f9; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid #e2e8f0; 
-            gap: 15px; 
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #1A355C;
+            border-radius: 6px;
+            background-color: #e3f2fd;
+            color: #1A355C;
+            font-weight: bold;
+            font-size: 14px;
         }
-        .search-box { 
-            flex: 1; 
-            max-width: 400px; 
+        .form-group input:focus {
+            outline: none;
+            border-color: #1A355C;
+            box-shadow: 0 0 0 3px rgba(26, 53, 92, 0.1);
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #1A355C;
+            color: #fff;
+            transition: background 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 6px;
+        }
+        button:hover {
+            background-color: #0F203A;
+        }
+
+        .toggle-forms {
+            margin-top: 16px;
+            text-align: center;
+            width: 100%;
+        }
+        .toggle-forms button {
+            background: none;
+            color: #1A355C;
+            text-decoration: underline;
+            padding: 4px 8px;
+            width: auto;
+            font-size: 13px;
+            margin: 0 auto;
+        }
+        .toggle-forms button:hover {
+            background: none;
+            color: #0F203A;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px 24px 24px;
+            border-radius: 10px;
+            width: 420px;
+            max-width: 92%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .modal-header h2 {
+            font-size: 16px;
+            color: #1A355C;
+        }
+        .close {
+            font-size: 22px;
+            cursor: pointer;
+            color: #64748b;
+            line-height: 1;
+        }
+
+        .turn-selection {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .turn-btn {
+            padding: 8px 12px;
+            font-size: 13px;
+            border: 2px solid #1A355C;
+            background-color: #fff;
+            color: #1A355C;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            flex: 1;
+            margin: 0;
+        }
+        .turn-btn.active {
+            background-color: #1A355C;
+            color: white;
+        }
+
+        /* Main Container */
+        #main-container {
+            width: 55%;
+            height: 96vh;
+            max-width: 1400px;
+            min-width: 320px;
+            display: none;
+            flex-direction: column;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* Header Compacto */
+        header {
+            background: linear-gradient(135deg, #1A355C, #0F203A);
+            color: white;
+            padding: 6px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 48px;
+        }
+        .header-left h1 {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .header-left .subtitle {
+            font-size: 11px;
+            opacity: 0.85;
+            line-height: 1.2;
+        }
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+            font-size: 12px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .info-item label {
+            font-weight: 400;
+            opacity: 0.8;
+            font-size: 11px;
+        }
+        .info-item span {
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* Turn Controls */
+        .turn-controls {
+            padding: 3px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+            font-weight: 600;
+            color: #1A355C;
+            font-size: 12px;
+            line-height: 24px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Controls */
+        .controls {
+            padding: 5px 12px;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            gap: 10px;
+            min-height: 38px;
+        }
+        .search-box {
+            flex: 1;
+            max-width: 350px;
             position: relative;
         }
-        .search-box input { 
-            padding: 10px 14px; 
-            border: 2px solid #1A355C; 
-            border-radius: 8px; 
-            width: 100%; 
-            font-size: 0.95rem; 
-            background-color: #e3f2fd; 
-            color: #1A355C; 
-            font-weight: bold; 
+        .search-box input {
+            padding: 4px 28px 4px 10px;
+            border: 2px solid #1A355C;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 13px;
+            background-color: #e3f2fd;
+            color: #1A355C;
+            font-weight: 600;
+            height: 30px;
         }
-        .search-box input:focus { 
-            outline: none; 
-            border-color: #1A355C; 
-            box-shadow: 0 0 0 3px rgba(26,53,92,0.1); 
+        .search-box input:focus {
+            outline: none;
+            border-color: #1A355C;
+            box-shadow: 0 0 0 2px rgba(26, 53, 92, 0.1);
         }
-        
-        /* Botão de limpar busca */
+
         .clear-search {
             position: absolute;
-            right: 10px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             color: #7D1A1A;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 14px;
             padding: 0;
             width: auto;
             display: none;
+            margin: 0;
+            line-height: 1;
         }
-        
-        .btn-edit { 
-            background-color: #1A355C; 
-            color: white; 
-            padding: 10px 16px; 
-            font-size: 0.85rem; 
-            border-radius: 8px;
+
+        .buttons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
         }
-        
-        /* Botão Fechar Turno menor no canto direito */
-        .btn-close-shift { 
-            background-color: #7D1A1A; 
-            color: white; 
-            font-weight: 700; 
-            padding: 8px 16px; 
-            font-size: 0.8rem; 
-            border-radius: 6px;
+
+        .btn-close-shift {
+            background-color: #7D1A1A;
+            color: white;
+            font-weight: 700;
+            padding: 4px 14px;
+            font-size: 12px;
+            border-radius: 4px;
             width: auto;
             margin: 0;
+            height: 30px;
+            line-height: 1;
         }
-        .btn-close-shift:hover { 
-            background-color: #5C1010; 
+        .btn-close-shift:hover {
+            background-color: #5C1010;
         }
-        
-        .main-content { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             position: relative;
         }
-        .table-container { 
-            flex: 1; 
-            overflow: auto; 
+        .table-container {
+            flex: 1;
+            overflow: auto;
             border-bottom: 2px solid #e2e8f0;
         }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 0.85rem; 
-            table-layout: fixed; 
+
+        /* Tabela Compacta */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            table-layout: fixed;
         }
-        thead { 
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0); 
-            position: sticky; 
-            top: 0; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        thead {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
         }
-        th { 
-            padding: 12px 8px; 
-            text-align: center; 
-            font-weight: 700; 
-            color: #1A355C; 
-            border-bottom: 2px solid #cbd5e1; 
-            font-size: 0.9rem; 
+        th {
+            padding: 5px 6px;
+            text-align: center;
+            font-weight: 700;
+            color: #1A355C;
+            border-bottom: 2px solid #cbd5e1;
+            font-size: 12px;
+            letter-spacing: 0.3px;
         }
-        td { 
-            padding: 8px 8px; 
-            border-bottom: 1px solid #f1f5f9; 
+        td {
+            padding: 3px 6px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
         }
-        .product-name { 
-            font-weight: 600; 
-            text-align: left; 
-            padding-left: 12px; 
+
+        .product-name {
+            font-weight: 600;
+            text-align: left;
+            padding-left: 8px;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .numeric { 
-            text-align: center; 
-            font-variant-numeric: tabular-nums; 
+        .numeric {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            font-size: 13px;
         }
-        
-        .qty-input, .entry-input { 
-            width: 70px; 
-            padding: 8px 10px; 
-            border: 2px solid #1A355C; 
-            border-radius: 6px; 
-            text-align: center; 
-            font-size: 0.85rem; 
-            margin: 0 auto; 
-            display: block; 
-            background-color: #e3f2fd; 
-            color: #1A355C; 
-            font-weight: bold;
+
+        /* Inputs compactos */
+        .qty-input,
+        .entry-input {
+            width: 55px;
+            height: 28px;
+            padding: 2px 4px;
+            border: 2px solid #1A355C;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            margin: 0 auto;
+            display: block;
+            background-color: #e3f2fd;
+            color: #1A355C;
+            font-weight: 700;
         }
-        .qty-input:focus, .entry-input:focus { 
-            outline: none; 
-            border-color: #1A355C; 
-            box-shadow: 0 0 0 2px rgba(26,53,92,0.1); 
-            background: #f0f9ff; 
+        .qty-input:focus,
+        .entry-input:focus {
+            outline: none;
+            border-color: #1A355C;
+            box-shadow: 0 0 0 2px rgba(26, 53, 92, 0.1);
+            background: #f0f9ff;
         }
-        
-        .sale-controls { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            min-width: 150px; 
-            margin: 0 auto; 
-            padding: 0 10px; 
+
+        /* Vendas - compacto */
+        .sale-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            min-width: 110px;
+            margin: 0 auto;
+            padding: 0 2px;
         }
-        .sale-btn { 
-            width: 30px; 
-            height: 30px; 
-            padding: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1rem; 
-            font-weight: bold; 
-            border-radius: 6px; 
-            border: none; 
+        .sale-btn {
+            width: 26px;
+            height: 26px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 4px;
+            border: none;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background 0.2s ease;
+            margin: 0;
+            line-height: 1;
         }
-        .sale-plus { 
-            background-color: #1A355C; 
-            color: white; 
+        .sale-plus {
+            background-color: #1A355C;
+            color: white;
         }
-        .sale-plus:hover { 
-            background-color: #0F203A; 
+        .sale-plus:hover {
+            background-color: #0F203A;
         }
-        .sale-minus { 
-            background-color: #7D1A1A; 
-            color: white; 
+        .sale-minus {
+            background-color: #7D1A1A;
+            color: white;
         }
-        .sale-minus:hover { 
-            background-color: #5C1010; 
+        .sale-minus:hover {
+            background-color: #5C1010;
         }
-        .sale-qty { 
-            min-width: 40px; 
-            text-align: center; 
-            font-weight: 700; 
-            padding: 4px 8px; 
+        .sale-qty {
+            min-width: 26px;
+            text-align: center;
+            font-weight: 700;
+            padding: 0 2px;
+            font-size: 13px;
         }
-        .sale-total { 
-            font-weight: 700; 
-            color: #1A355C; 
-            margin-left: 12px; 
+        .sale-total {
+            font-weight: 700;
+            color: #1A355C;
+            margin-left: 2px;
+            font-size: 13px;
+            min-width: 48px;
+            text-align: right;
         }
-        
-        /* Área do Total de Vendas melhorada */
+
+        /* Total de Vendas - barra amarela reduzida */
         .sales-summary {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 25px;
+            padding: 6px 16px;
             background: #FFF176;
-            border-top: 3px solid #FFEB3B;
-            margin-top: 0;
+            border-top: 2px solid #FFEB3B;
+            min-height: 40px;
         }
-        
-        .total-vendas { 
-            font-weight: 700; 
+
+        .total-vendas {
+            font-weight: 700;
             color: #5D4037;
-            font-size: 1.1rem;
+            font-size: 14px;
         }
-        
+
         .total-value {
             font-weight: 700;
             color: #1A355C;
-            font-size: 1.3rem;
+            font-size: 16px;
         }
-        
-        footer { 
-            padding: 12px 25px; 
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            font-size: 0.85rem; 
-            color: #64748b; 
-        }
-        
-        .footer-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .print-header { display: none; }
-        
-        .col-produto { width: 28%; } 
-        .col-inicial { width: 12%; } 
-        .col-valor { width: 10%; }
-        .col-entrada { width: 12%; } 
-        .col-vendidos { width: 12%; } 
-        .col-estoque { width: 12%; } 
-        .col-vendas { width: 14%; }
 
-        /* Estilos para o modal de edição de produtos */
-        .edit-controls {
+        /* Footer compacto */
+        footer {
+            padding: 4px 16px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            font-size: 11px;
+            color: #64748b;
+            min-height: 32px;
+        }
+        .footer-right {
+            display: flex;
+            align-items: center;
             gap: 10px;
         }
 
-        .edit-search-box {
-            flex: 1;
-            position: relative;
+        .print-header {
+            display: none;
         }
 
-        .edit-search-box input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 2px solid #1A355C;
-            border-radius: 6px;
-            font-size: 0.9rem;
+        /* Colunas ajustadas */
+        .col-produto {
+            width: 30%;
+        }
+        .col-inicial {
+            width: 8%;
+        }
+        .col-valor {
+            width: 8%;
+        }
+        .col-entrada {
+            width: 8%;
+        }
+        .col-vendidos {
+            width: 8%;
+        }
+        .col-estoque {
+            width: 8%;
+        }
+        .col-vendas {
+            width: 30%;
         }
 
-        .sort-controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        .sort-btn {
-            padding: 6px 12px;
-            border: 1px solid #1A355C;
-            background: white;
-            color: #1A355C;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .sort-btn.active {
-            background: #1A355C;
-            color: white;
-        }
-
-        /* Modal sobreposto para edição de produto */
-        .overlay-modal {
-            z-index: 2000;
-        }
-        
-        /* Estilos para impressão */
-        @media print {
-            @page {
-                margin: 0.5cm;
-            }
-            
-            * {
-                font-weight: bold !important;
-            }
-            
-            body { 
-                background: white !important; 
-                padding: 0 !important; 
-                margin: 0 !important; 
-                font-size: 12px !important;
-                font-weight: bold !important;
-            }
-            
-            .container { 
-                box-shadow: none !important; 
-                border-radius: 0 !important; 
-                width: 100% !important; 
-                height: auto !important; 
-                min-height: auto !important; 
-                max-width: none !important; 
-                max-height: none !important; 
-            }
-            
-            .controls, .turn-controls, .btn-close-shift, footer, .sale-controls, 
-            header, .header-info, .header-left { 
-                display: none !important; 
-            }
-            
-            .qty-input, .entry-input { 
-                border: none !important; 
-                background: transparent !important; 
-                font-size: 10px !important;
-                font-weight: 700 !important;
-                font-family: 'Courier New', monospace !important;
-            }
-            
-            /* Cabeçalho de impressão simples */
-            .print-header { 
-                display: flex !important; 
-                justify-content: flex-end !important; 
-                align-items: flex-start !important; 
-                gap: 15px !important; 
-                margin-bottom: 10px !important; 
-                font-size: 10px !important; 
-                padding: 0 8px !important;
-                page-break-inside: avoid !important;
-                font-weight: 700 !important;
-            }
-            
-            .print-header div { 
-                display: flex; 
-                flex-direction: column; 
-                align-items: flex-start; 
-                line-height: 1.2 !important; 
-            }
-            
-            .print-header strong { 
-                font-size: 9px !important; 
-                margin-bottom: 2px !important; 
-                color: #1A355C !important;
-                font-weight: 800 !important;
-            }
-            
-            .print-header span { 
-                font-size: 10px !important; 
-                font-weight: 700 !important;
-            }
-            
-            .sales-summary { 
-                display: flex !important; 
-                background: #FFF176 !important; 
-                border-top: 1px solid #FFEB3B !important; 
-                margin-top: 10px !important; 
-                padding: 8px 15px !important; 
-                font-size: 11px !important; 
-                margin-bottom: 0 !important;
-                page-break-inside: avoid !important;
-                font-weight: 800 !important;
-            }
-            
-            table { 
-                font-size: 10px !important; 
-                margin-top: 0 !important; 
-                page-break-inside: avoid !important;
-            }
-            
-            th { 
-                padding: 4px 2px !important; 
-                text-align: center !important; 
-                font-weight: 800 !important; 
-                color: #1A355C !important; 
-                border-bottom: 2px solid #cbd5e1 !important; 
-                font-size: 9px !important; 
-            }
-            
-            td { 
-                padding: 3px 2px !important; 
-                line-height: 1.2 !important; 
-                border-bottom: 0.5px solid #e2e8f0 !important; 
-                font-size: 10px !important;
-                font-weight: 700 !important;
-            }
-            
-            .product-name {
-                font-size: 10px !important;
-                padding-left: 3px !important;
-                font-weight: 700 !important;
-            }
-
-            /* Uniformizar tamanho dos números na impressão */
-            .numeric, .qty-input, .entry-input, .sale-qty, .sale-total {
-                font-size: 10px !important;
-                font-family: 'Courier New', monospace !important;
-                font-weight: 700 !important;
-            }
-            
-            .col-vendas { display: none !important; }
-            .col-produto { width: 42% !important; }
-            .col-inicial { width: 9% !important; }
-            .col-valor { width: 9% !important; }
-            .col-entrada { width: 9% !important; }
-            .col-vendidos { width: 9% !important; }
-            .col-estoque { width: 9% !important; }
-            
-            tbody tr { 
-                page-break-inside: avoid !important; 
-                height: 14px !important; 
-            }
-            
-            .table-container { 
-                overflow: visible !important; 
-                height: auto !important; 
-            }
-            
-            * { 
-                margin: 0 !important; 
-                padding: 0 !important; 
-            }
-            
-            /* Remove qualquer data/hora do navegador */
-            .date-time, .url, .page-title {
-                display: none !important;
-            }
-            
-            .total-vendas { 
-                font-weight: 800 !important;
-                color: #5D4037 !important;
-                font-size: 11px !important;
-            }
-            
-            .total-value {
-                font-weight: 900 !important;
-                color: #1A355C !important;
-                font-size: 12px !important;
-            }
-        }
-        
-        /* Botões de seleção de turno na tela inicial */
+        /* Shift selection */
         .shift-selection {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 12px;
             width: 100%;
         }
-        
         .shift-btn {
-            padding: 16px 24px;
-            font-size: 16px;
+            padding: 14px 20px;
+            font-size: 15px;
             border: 2px solid #1A355C;
             background-color: #fff;
             color: #1A355C;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
             width: 100%;
         }
-        
         .shift-btn:hover {
             background-color: #1A355C;
             color: white;
         }
-        
         .shift-btn.new-shift {
             background-color: #1A355C;
             color: white;
         }
-        
         .shift-btn.continue-shift {
             background-color: #4CAF50;
             color: white;
             border-color: #4CAF50;
         }
-        
         .shift-btn.continue-shift:hover {
             background-color: #388E3C;
         }
-        
-        /* Modal para continuar turno */
+
         .continue-shift-modal {
             z-index: 1500;
         }
-        
-        /* Botões de ação no modal de edição */
+
         .form-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 14px;
         }
-        
+        .form-actions button {
+            width: auto;
+            margin: 0;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
         .btn-cancel {
             background-color: #ccc;
             color: #333;
-            width: auto;
-            padding: 8px 16px;
         }
-        
-        .btn-save, .btn-add {
+        .btn-save {
             background-color: #1A355C;
             color: white;
-            width: auto;
-            padding: 8px 16px;
         }
-        
-        .btn-add {
-            background-color: #4CAF50;
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            #main-container {
+                width: 70%;
+                max-width: 1100px;
+            }
+            .col-produto {
+                width: 26%;
+            }
+            .col-vendas {
+                width: 34%;
+            }
+            .sale-controls {
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            #main-container {
+                width: 85%;
+                max-width: 900px;
+            }
+            .col-produto {
+                width: 22%;
+            }
+            .col-vendas {
+                width: 38%;
+            }
+            .sale-controls {
+                min-width: 90px;
+                gap: 2px;
+            }
+            .sale-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 12px;
+            }
+            .sale-qty {
+                min-width: 20px;
+                font-size: 12px;
+            }
+            .sale-total {
+                font-size: 11px;
+                min-width: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 4px;
+            }
+            #main-container {
+                width: 98% !important;
+                height: 100vh;
+                max-width: none;
+                min-width: auto;
+                border-radius: 0;
+            }
+            header {
+                padding: 4px 10px;
+                min-height: 40px;
+                flex-wrap: wrap;
+            }
+            .header-left h1 {
+                font-size: 13px;
+            }
+            .header-left .subtitle {
+                font-size: 10px;
+            }
+            .header-info {
+                font-size: 10px;
+            }
+            .info-item span {
+                font-size: 10px;
+            }
+            .controls {
+                padding: 4px 8px;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .search-box {
+                max-width: 100%;
+                flex: 1 1 100%;
+            }
+            .buttons {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .col-produto {
+                width: 20%;
+            }
+            .col-vendas {
+                width: 40%;
+            }
+            .sale-controls {
+                min-width: 80px;
+                gap: 2px;
+            }
+            .sale-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 11px;
+            }
+            .sale-qty {
+                min-width: 18px;
+                font-size: 11px;
+            }
+            .sale-total {
+                font-size: 10px;
+                min-width: 34px;
+            }
+            .qty-input,
+            .entry-input {
+                width: 44px;
+                height: 24px;
+                font-size: 11px;
+                padding: 1px 2px;
+            }
+            th {
+                font-size: 10px;
+                padding: 4px 3px;
+            }
+            td {
+                padding: 2px 3px;
+                font-size: 11px;
+            }
+            .product-name {
+                font-size: 11px;
+                padding-left: 4px;
+            }
+            .numeric {
+                font-size: 11px;
+            }
+            .sales-summary {
+                padding: 4px 12px;
+                min-height: 32px;
+            }
+            .total-vendas {
+                font-size: 12px;
+            }
+            .total-value {
+                font-size: 14px;
+            }
+            footer {
+                padding: 3px 10px;
+                font-size: 10px;
+                min-height: 28px;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .footer-right {
+                gap: 6px;
+            }
+            .btn-close-shift {
+                font-size: 10px;
+                padding: 3px 10px;
+                height: 26px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #main-container {
+                width: 100% !important;
+                height: 100vh;
+                border-radius: 0;
+            }
+            .col-produto {
+                width: 16%;
+            }
+            .col-vendas {
+                width: 46%;
+            }
+            .sale-controls {
+                min-width: 60px;
+                gap: 1px;
+            }
+            .sale-btn {
+                width: 18px;
+                height: 18px;
+                font-size: 10px;
+            }
+            .sale-qty {
+                min-width: 14px;
+                font-size: 10px;
+            }
+            .sale-total {
+                font-size: 9px;
+                min-width: 28px;
+            }
+            .qty-input,
+            .entry-input {
+                width: 36px;
+                height: 22px;
+                font-size: 10px;
+            }
+            th {
+                font-size: 9px;
+                padding: 3px 2px;
+            }
+            td {
+                padding: 2px 2px;
+                font-size: 10px;
+            }
+            .product-name {
+                font-size: 10px;
+                padding-left: 3px;
+            }
+            .numeric {
+                font-size: 10px;
+            }
+            .sales-summary {
+                padding: 3px 8px;
+                min-height: 28px;
+            }
+            .total-vendas {
+                font-size: 11px;
+            }
+            .total-value {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -741,20 +825,19 @@
     <div class="auth-wrapper" id="initial-container">
         <div class="login-container">
             <img src="logo.png" alt="Logo Posto Picoró" class="login-logo" />
-            
+
             <div class="shift-selection">
                 <button class="shift-btn new-shift" id="new-shift-btn">NOVO TURNO</button>
                 <button class="shift-btn continue-shift" id="continue-shift-btn">CONTINUAR TURNO</button>
             </div>
         </div>
     </div>
-    
+
     <!-- Tela de Login/Cadastro Centralizada -->
     <div class="auth-wrapper" id="auth-container" style="display: none;">
         <div class="login-container">
             <img src="logo.png" alt="Logo Posto Picoró" class="login-logo" />
-            
-            <!-- Formulário de Login -->
+
             <form id="login-form">
                 <div class="form-group">
                     <label>Código de Acesso:</label>
@@ -762,8 +845,7 @@
                 </div>
                 <button type="submit" class="btn-login">ACESSAR SISTEMA</button>
             </form>
-            
-            <!-- Formulário de Cadastro (inicialmente oculto) -->
+
             <form id="register-form" style="display: none;">
                 <div class="form-group">
                     <label>Nome do Frentista Caixa:</label>
@@ -775,13 +857,13 @@
                 </div>
                 <button type="submit" class="btn-register">CADASTRAR</button>
             </form>
-            
+
             <div class="toggle-forms">
                 <button id="toggle-auth">Não tem cadastro? Clique aqui</button>
             </div>
         </div>
     </div>
-    
+
     <!-- Modal para continuar turno -->
     <div class="modal continue-shift-modal" id="continue-shift-modal">
         <div class="modal-content">
@@ -801,7 +883,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Modal para seleção de data e turno -->
     <div class="modal" id="turn-modal">
         <div class="modal-content">
@@ -831,35 +913,8 @@
         </div>
     </div>
 
-    <!-- Modal para autenticação de administrador -->
-    <div class="modal" id="admin-auth-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Acesso de Administrador</h2>
-                <span class="close" id="close-admin-modal">×</span>
-            </div>
-            <form id="admin-auth-form">
-                <div class="form-group">
-                    <label>Código de Administrador:</label>
-                    <input type="password" id="admin-code" required placeholder="Digite o código de administrador" maxlength="6">
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" id="cancel-admin">Cancelar</button>
-                    <button type="submit" class="btn-save">Validar Acesso</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Sistema Principal (inicialmente oculto) -->
+    <!-- Sistema Principal -->
     <div class="container" id="main-container">
-        <!-- Cabeçalho de impressão - agora será exibido na impressão -->
-        <div class="print-header">
-            <div><strong>Data:</strong><span id="print-date">--/--/----</span></div>
-            <div><strong>Frentista:</strong><span id="print-frentista">--</span></div>
-            <div><strong>Turno:</strong><span id="print-turno">--</span></div>
-        </div>
-        
         <header>
             <div class="header-left">
                 <h1>Posto Picoró</h1>
@@ -867,47 +922,46 @@
             </div>
             <div class="header-info">
                 <div class="info-item"><label>DATA:</label><span id="current-date">--/--/----</span></div>
-                <div class="info-item"><label>FRENTISTA CAIXA:</label><span id="frentista-display">--</span></div>
+                <div class="info-item"><label>FRENTISTA:</label><span id="frentista-display">--</span></div>
             </div>
         </header>
-        
+
         <div class="turn-controls">TURNO: <span id="turn-display">--</span></div>
-        
+
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="search" placeholder="Buscar produto...">
                 <button class="clear-search" id="clear-search" title="Limpar busca">✕</button>
             </div>
             <div class="buttons">
-                <button class="btn-edit" id="edit-products">✏️ Editar Produtos</button>
+                <!-- Botão Editar REMOVIDO -->
             </div>
         </div>
-        
+
         <div class="main-content">
             <div class="table-container">
                 <table id="products-table">
                     <thead>
                         <tr>
                             <th class="col-produto" style="text-align: left;">PRODUTO</th>
-                            <th class="col-inicial">QTD INICIAL</th>
-                            <th class="col-valor">VALOR (R$)</th>
+                            <th class="col-inicial">INICIAL</th>
+                            <th class="col-valor">R$</th>
                             <th class="col-entrada">ENTRADA</th>
-                            <th class="col-vendidos">QTD VENDIDA</th>
-                            <th class="col-estoque">ESTOQUE FINAL</th>
+                            <th class="col-vendidos">VENDIDOS</th>
+                            <th class="col-estoque">ESTOQUE</th>
                             <th class="col-vendas">VENDAS</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
                 </table>
             </div>
-            
-            <!-- Área do Total de Vendas melhorada -->
+
             <div class="sales-summary">
-                <div class="total-vendas">TOTAL DE VENDAS:</div>
+                <div class="total-vendas">TOTAL DE VENDAS (Lubrificantes):</div>
                 <div class="total-value" id="total-sales">R$ 0,00</div>
             </div>
         </div>
-        
+
         <footer>
             <span>Sistema de Controle - Posto Picoró</span>
             <div class="footer-right">
@@ -915,103 +969,37 @@
             </div>
         </footer>
     </div>
-    
-    <!-- Modal para edição de produtos (sobreposto) -->
-    <div class="modal overlay-modal" id="product-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Adicionar Lubrificante</h2>
-                <span class="close" id="close-modal">×</span>
-            </div>
-            <form id="product-form">
-                <div class="form-group">
-                    <label>Nome do Produto:</label>
-                    <input type="text" id="product-name" required>
-                </div>
-                <div class="form-group">
-                    <label>Valor (R$):</label>
-                    <input type="number" id="product-value" step="0.01" min="0" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" id="cancel-form">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="edit-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Produtos</h2>
-                <span class="close" id="close-edit-modal">×</span>
-            </div>
-            
-            <!-- Controles de busca e ordenação -->
-            <div class="edit-controls">
-                <div class="edit-search-box">
-                    <input type="text" id="edit-search" placeholder="Buscar produto...">
-                </div>
-                <div class="sort-controls">
-                    <button class="sort-btn" data-sort="name">Nome A-Z</button>
-                    <button class="sort-btn" data-sort="value">Valor</button>
-                </div>
-            </div>
-            
-            <div class="table-container" style="max-height: 350px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="text-align: left;">PRODUTO</th>
-                            <th>VALOR (R$)</th>
-                            <th>AÇÕES</th>
-                        </tr>
-                    </thead>
-                    <tbody id="edit-table-body"></tbody>
-                </table>
-            </div>
-            <div class="form-actions" style="margin-top: 20px;">
-                <button type="button" class="btn-cancel" id="cancel-edit">Fechar</button>
-                <button type="button" class="btn-add" id="add-new-product">Adicionar Novo</button>
-            </div>
-        </div>
-    </div>
 
     <script>
-        // Dados iniciais - TODOS OS LUBRIFICANTES ADICIONADOS
+        // Dados iniciais - COM NOVOS PRODUTOS DE GÁS
         const initialProducts = [
-            { name: "ADITIVO RADIADOR ROOL TECH", value: 16.50 },
-            { name: "DISCO TACÓGRAFO", value: 48.00 },
-            { name: "LUBRAX ESSENTIAL 2T 200ml (VERDE)", value: 11.00 },
-            { name: "LUBRAX ESSENTIAL 2T 500ml (VERDE)", value: 23.00 },
-            { name: "LUBRAX ESSENTIAL 2T FC 200ml (AMARELO)", value: 16.00 },
-            { name: "LUBRAX ESSENTIAL 2T FC 500ml (AMARELO)", value: 31.00 },
-            { name: "FLUIDO DE FREIO HI TECH DOT 3 200ml", value: 12.00 },
-            { name: "FLUIDO DE FREIO HI TECH DOT 4 200ml", value: 12.00 },
-            { name: "STIHL", value: 65.00 },
-            { name: "SPRINT F900 10W40 4T", value: 42.00 },
-            { name: "SPRINTA F500 10W30", value: 35.00 },
-            { name: "SPRINTA F300 20W50", value: 30.00 },
-            { name: "URANIA 15W40 1 LITRO", value: 45.00 },
-            { name: "URANIA 15W40 4 LITROS", value: 125.00 },
-            { name: "KARTER TASA SUFIXO A", value: 28.00 },
-            { name: "SYNTIUM 800 10W40", value: 50.00 },
-            { name: "SYNTIUM 20W50", value: 28.00 },
-            { name: "SELENIA PERFORM 5W40", value: 43.00 },
-            { name: "SELENIA 5W30", value: 36.00 },
-            { name: "SELENIA K", value: 32.00 },
-            { name: "BARDAHL MAX 200ml", value: 25.00 },
-            { name: "GÁS", value: 119.00 },
-            { name: "GÁS CASCO", value: 200.00 },
-            { name: "ADITIVO GASOLINA RADNAQ", value: 14.00 },
-            // NOVOS LUBRIFICANTES ADICIONADOS ABAIXO
-            { name: "LIMPA PARA BRISAS 100ml", value: 12.00 },
-            { name: "RADNAQ ULTRA PS 1 LITRO", value: 25.00 },
-            { name: "FLUIDO DE FREIO RADNAQ DOT 3 200ml", value: 10.00 },
-            { name: "FLUIDO DE FREIO RADNAQ DOT 4 500ml", value: 20.00 },
-            { name: "FLUIDO DE FREIO RADNAQ DOT 4 200ml", value: 10.00 },
-            { name: "ANTIRUST ADITIVO 1 LITRO", value: 20.00 },
-            { name: "KOUBE TOP CLEAN FLEX 250ml", value: 23.00 }
+            { name: "Petronas Syntium 300 20w50", value: 37.00 },
+            { name: "Lubrax Essential 2T 200ml (VERDE)", value: 12.00 },
+            { name: "Lubrax Essential 2T 500ml (VERDE)", value: 34.00 },
+            { name: "Lubrax Essential 2T FC 200ml (AMARELO)", value: 15.00 },
+            { name: "Lubrax Essential 2T FC 500ml (AMARELO)", value: 50.00 },
+            { name: "Petronas Selenia K 15w40", value: 36.00 },
+            { name: "Hi Tech Fluido para Freio DOT 4", value: 15.00 },
+            { name: "Disco Tacógrafo", value: 45.00 },
+            { name: "STIHL", value: 60.00 },
+            { name: "Hi Tech Fluido para Freio DOT 3 200ml", value: 12.00 },
+            { name: "Petronas Syntium 800 10w40", value: 45.00 },
+            { name: "Petronas Urania 1 Litro", value: 40.00 },
+            { name: "Rool Tech Aditivo Radiador 1 Litro", value: 15.00 },
+            { name: "Karter Tasa 1 Litro", value: 26.00 },
+            { name: "Radnaq Gas Fuel 200ml", value: 15.00 },
+            { name: "Agua Desmineralizada", value: 10.00 },
+            { name: "Petronas Selenia Perform 5w30", value: 40.00 },
+            { name: "Petronas Urania 4 Litros", value: 140.00 },
+            { name: "Petronas Selenia Perform 5w40", value: 40.00 },
+            { name: "Sprinta F300", value: 37.00 },
+            { name: "Bardahl Max S10 500ml", value: 55.00 },
+            { name: "Bardahl Max Diesel 200ml", value: 35.00 },
+            { name: "Koube Top Clean", value: 20.00 },
+            { name: "Sprinta F500", value: 45.00 },
+            { name: "Sprinta F900", value: 45.00 },
+            { name: "Gás", value: 119.00 },
+            { name: "Gás Casco", value: 200.00 }
         ];
 
         // Usuários administradores
@@ -1023,7 +1011,7 @@
 
         // Banco de dados usando IndexedDB
         const DB_NAME = 'PostoPicoroDB';
-        const DB_VERSION = 2; // Aumentei a versão para forçar atualização
+        const DB_VERSION = 3;
         const STORE_USERS = 'users';
         const STORE_PRODUCTS = 'products';
         const STORE_SHIFTS = 'shifts';
@@ -1032,111 +1020,75 @@
         let db = null;
         let users = [...adminUsers];
         let products = [...initialProducts];
-        let currentEditingIndex = -1;
         let initialQuantities = {};
         let entryQuantities = {};
         let salesData = {};
         let sessionData = {};
         let currentUser = null;
         let currentSearchTerm = '';
-        let currentSort = 'name';
-        let editSearchTerm = '';
-        let isEditSessionActive = false;
         let isNewShift = true;
         let currentShiftId = null;
-        
-        // Inicializar banco de dados - CORRIGIDO
+
+        // Inicializar banco de dados
         function initDatabase() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
-                
+
                 request.onerror = () => {
                     console.error('Erro ao abrir banco de dados:', request.error);
-                    // Se houver erro, tenta abrir sem versão específica
-                    const fallbackRequest = indexedDB.open(DB_NAME);
-                    fallbackRequest.onerror = () => {
-                        console.error('Erro também no fallback:', fallbackRequest.error);
-                        reject(fallbackRequest.error);
-                    };
-                    fallbackRequest.onsuccess = () => {
-                        db = fallbackRequest.result;
-                        console.log('Banco de dados aberto com sucesso no modo fallback');
-                        resolve(db);
-                    };
+                    reject(request.error);
                 };
-                
+
                 request.onsuccess = () => {
                     db = request.result;
                     console.log('Banco de dados aberto com sucesso');
                     resolve(db);
                 };
-                
+
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
                     console.log('Upgrading database to version:', DB_VERSION);
-                    
-                    // Criar store de usuários
-                    if (!db.objectStoreNames.contains(STORE_USERS)) {
-                        const userStore = db.createObjectStore(STORE_USERS, { keyPath: 'code' });
-                        userStore.createIndex('name', 'name', { unique: false });
-                        console.log('Store de usuários criada');
+
+                    if (db.objectStoreNames.contains(STORE_USERS)) {
+                        db.deleteObjectStore(STORE_USERS);
                     }
-                    
-                    // Criar store de produtos
-                    if (!db.objectStoreNames.contains(STORE_PRODUCTS)) {
-                        const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'id', autoIncrement: true });
-                        productStore.createIndex('name', 'name', { unique: true });
-                        productStore.createIndex('value', 'value', { unique: false });
-                        console.log('Store de produtos criada');
+                    if (db.objectStoreNames.contains(STORE_PRODUCTS)) {
+                        db.deleteObjectStore(STORE_PRODUCTS);
                     }
-                    
-                    // Criar store de turnos
-                    if (!db.objectStoreNames.contains(STORE_SHIFTS)) {
-                        const shiftStore = db.createObjectStore(STORE_SHIFTS, { keyPath: 'id', autoIncrement: true });
-                        shiftStore.createIndex('userCode', 'userCode', { unique: false });
-                        shiftStore.createIndex('date', 'date', { unique: false });
-                        console.log('Store de turnos criada');
+                    if (db.objectStoreNames.contains(STORE_SHIFTS)) {
+                        db.deleteObjectStore(STORE_SHIFTS);
                     }
-                    
-                    // Criar store de turnos ativos
-                    if (!db.objectStoreNames.contains(STORE_ACTIVE_SHIFTS)) {
-                        const activeShiftStore = db.createObjectStore(STORE_ACTIVE_SHIFTS, { keyPath: 'userCode' });
-                        console.log('Store de turnos ativos criada');
+                    if (db.objectStoreNames.contains(STORE_ACTIVE_SHIFTS)) {
+                        db.deleteObjectStore(STORE_ACTIVE_SHIFTS);
                     }
-                    
-                    // Se estamos atualizando, apagar produtos antigos e recriar
-                    if (event.oldVersion < 2) {
-                        console.log('Atualizando estrutura do banco de dados da versão', event.oldVersion, 'para', DB_VERSION);
-                        
-                        // Se existia a store de produtos antiga, apagar e recriar
-                        if (db.objectStoreNames.contains(STORE_PRODUCTS)) {
-                            db.deleteObjectStore(STORE_PRODUCTS);
-                            console.log('Store de produtos antiga removida');
-                        }
-                        
-                        // Recriar store de produtos
-                        const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'id', autoIncrement: true });
-                        productStore.createIndex('name', 'name', { unique: true });
-                        productStore.createIndex('value', 'value', { unique: false });
-                        console.log('Store de produtos recriada');
-                    }
+
+                    const userStore = db.createObjectStore(STORE_USERS, { keyPath: 'code' });
+                    userStore.createIndex('name', 'name', { unique: false });
+
+                    const productStore = db.createObjectStore(STORE_PRODUCTS, { keyPath: 'id', autoIncrement: true });
+                    productStore.createIndex('name', 'name', { unique: true });
+                    productStore.createIndex('value', 'value', { unique: false });
+
+                    const shiftStore = db.createObjectStore(STORE_SHIFTS, { keyPath: 'id', autoIncrement: true });
+                    shiftStore.createIndex('userCode', 'userCode', { unique: false });
+                    shiftStore.createIndex('date', 'date', { unique: false });
+
+                    const activeShiftStore = db.createObjectStore(STORE_ACTIVE_SHIFTS, { keyPath: 'userCode' });
                 };
-                
+
                 request.onblocked = () => {
-                    console.warn('Banco de dados está bloqueado por outra aba. Feche outras abas com o sistema aberto.');
+                    console.warn('Banco de dados está bloqueado por outra aba.');
                     alert('Por favor, feche outras abas com o sistema aberto e recarregue a página.');
                 };
             });
         }
-        
-        // Funções para manipular o banco de dados
+
         function addItem(storeName, item) {
             return new Promise((resolve, reject) => {
                 try {
                     const transaction = db.transaction([storeName], 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.add(item);
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 } catch (error) {
@@ -1144,14 +1096,13 @@
                 }
             });
         }
-        
+
         function getItem(storeName, key) {
             return new Promise((resolve, reject) => {
                 try {
                     const transaction = db.transaction([storeName], 'readonly');
                     const store = transaction.objectStore(storeName);
                     const request = store.get(key);
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 } catch (error) {
@@ -1159,14 +1110,13 @@
                 }
             });
         }
-        
+
         function getAllItems(storeName) {
             return new Promise((resolve, reject) => {
                 try {
                     const transaction = db.transaction([storeName], 'readonly');
                     const store = transaction.objectStore(storeName);
                     const request = store.getAll();
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 } catch (error) {
@@ -1174,14 +1124,13 @@
                 }
             });
         }
-        
+
         function updateItem(storeName, item) {
             return new Promise((resolve, reject) => {
                 try {
                     const transaction = db.transaction([storeName], 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.put(item);
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 } catch (error) {
@@ -1189,14 +1138,13 @@
                 }
             });
         }
-        
+
         function deleteItem(storeName, key) {
             return new Promise((resolve, reject) => {
                 try {
                     const transaction = db.transaction([storeName], 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.delete(key);
-                    
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 } catch (error) {
@@ -1204,14 +1152,29 @@
                 }
             });
         }
-        
-        // Carregar dados iniciais no banco - CORRIGIDO E SIMPLIFICADO
+
         async function loadInitialData() {
             try {
-                // Carregar usuários
+                const existingProducts = await getAllItems(STORE_PRODUCTS).catch(() => []);
+                for (const product of existingProducts) {
+                    try {
+                        await deleteItem(STORE_PRODUCTS, product.id);
+                    } catch (e) {
+                        console.warn('Erro ao remover produto:', product.name);
+                    }
+                }
+
+                for (const product of initialProducts) {
+                    try {
+                        await addItem(STORE_PRODUCTS, { name: product.name, value: product.value });
+                    } catch (error) {
+                        console.warn('Erro ao inserir produto', product.name, ':', error);
+                    }
+                }
+                products = [...initialProducts];
+
                 const existingUsers = await getAllItems(STORE_USERS).catch(() => []);
                 if (existingUsers.length === 0) {
-                    console.log('Inserindo usuários iniciais...');
                     for (const user of adminUsers) {
                         try {
                             await addItem(STORE_USERS, user);
@@ -1222,91 +1185,31 @@
                     users = [...adminUsers];
                 } else {
                     users = existingUsers;
-                    console.log('Usuários carregados:', users.length);
                 }
-                
-                // Carregar produtos
-                const existingProducts = await getAllItems(STORE_PRODUCTS).catch(() => []);
-                console.log('Produtos existentes no banco:', existingProducts.length);
-                
-                if (existingProducts.length === 0) {
-                    console.log('Inserindo produtos iniciais...');
-                    for (const product of initialProducts) {
-                        try {
-                            await addItem(STORE_PRODUCTS, { name: product.name, value: product.value });
-                        } catch (error) {
-                            console.warn('Erro ao inserir produto', product.name, ':', error);
-                        }
-                    }
-                    products = [...initialProducts];
-                } else {
-                    // Mapeia os produtos do banco para o formato correto
-                    products = existingProducts.map(p => ({ 
-                        name: p.name, 
-                        value: p.value 
-                    }));
-                    console.log('Produtos carregados do banco:', products.length);
-                    
-                    // Verifica se os novos produtos estão presentes
-                    const novosProdutos = [
-                        "LIMPA PARA BRISAS 100ml",
-                        "RADNAQ ULTRA PS 1 LITRO",
-                        "FLUIDO DE FREIO RADNAQ DOT 3 200ml",
-                        "FLUIDO DE FREIO RADNAQ DOT 4 500ml",
-                        "FLUIDO DE FREIO RADNAQ DOT 4 200ml",
-                        "ANTIRUST ADITIVO 1 LITRO",
-                        "KOUBE TOP CLEAN FLEX 250ml"
-                    ];
-                    
-                    for (const novoProduto of novosProdutos) {
-                        const hasProduct = products.some(p => p.name === novoProduto);
-                        if (!hasProduct) {
-                            console.log(`Adicionando ${novoProduto}...`);
-                            const valor = initialProducts.find(p => p.name === novoProduto).value;
-                            try {
-                                await addItem(STORE_PRODUCTS, { name: novoProduto, value: valor });
-                                products.push({ name: novoProduto, value: valor });
-                            } catch (error) {
-                                console.warn(`Erro ao adicionar ${novoProduto}:`, error);
-                            }
-                        }
-                    }
-                }
-                
-                console.log('Produtos após carga:', products.length, 'produtos');
-                
+
             } catch (error) {
                 console.error('Erro ao carregar dados iniciais:', error);
-                // Em caso de erro, usa os dados locais
                 products = [...initialProducts];
                 users = [...adminUsers];
             }
         }
-        
-        // Funções utilitárias
+
         const formatCurrency = value => !value && value !== 0 ? '' : parseFloat(value).toFixed(2).replace('.', ',');
-        
-        // MODIFICAÇÃO: Função para calcular estoque final com a nova regra
+
         const calculateFinalStock = (initialQty, entryQty, salesQty) => {
-            // Se ambos quantidade inicial e entrada são 0, estoque final fica 0
             if ((!initialQty || initialQty === 0) && (!entryQty || entryQty === 0)) {
                 return 0;
             }
-            
             if (!initialQty && initialQty !== 0 && !entryQty && entryQty !== 0) return '';
             return Math.max(0, (parseInt(initialQty) || 0) + (parseInt(entryQty) || 0) - (parseInt(salesQty) || 0));
         };
 
-        // MODIFICAÇÃO: Função para navegação com Tab entre linhas
         function handleTabNavigation(event) {
             if (event.key === 'Tab') {
                 event.preventDefault();
                 const allInputs = Array.from(document.querySelectorAll('.qty-input, .entry-input'));
                 const currentIndex = allInputs.indexOf(event.target);
-                
-                // Se estiver no último campo, volta para o primeiro
                 const nextIndex = currentIndex + 1 >= allInputs.length ? 0 : currentIndex + 1;
-                
                 if (allInputs[nextIndex]) {
                     allInputs[nextIndex].focus();
                     allInputs[nextIndex].select();
@@ -1314,375 +1217,207 @@
             }
         }
 
-        // MODIFICAÇÃO: Função para atualizar estoque final quando os campos mudam
         function updateFinalStock(productId) {
             const initialQty = initialQuantities[productId] || 0;
             const entryQty = entryQuantities[productId] || 0;
             const saleInfo = salesData[productId] || { quantity: 0 };
             const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
-            
-            // Atualiza a exibição do estoque final na tabela
-            const row = document.querySelector(`input[data-product="${productId}"]`).closest('tr');
+
+            const row = document.querySelector(`input[data-product="${productId}"]`)?.closest('tr');
             if (row) {
-                const finalStockCell = row.querySelector('td:nth-child(6)'); // Coluna do estoque final
+                const finalStockCell = row.querySelector('td:nth-child(6)');
                 if (finalStockCell) {
                     finalStockCell.textContent = finalStock;
                 }
             }
-            
             return finalStock;
         }
 
-        // Função para obter data atual do Brasil
         function getBrazilianDate() {
             const now = new Date();
-            // Ajusta para o fuso horário do Brasil (UTC-3)
-            const offset = -3 * 60; // UTC-3 em minutos
+            const offset = -3 * 60;
             const brazilTime = new Date(now.getTime() + (offset - now.getTimezoneOffset()) * 60000);
             return brazilTime.toISOString().split('T')[0];
         }
 
-        // Função para gerar e baixar relatório em HTML
-        function generateAndDownloadReport() {
-            // Primeiro, abre a impressão
-            window.print();
-            
-            // Depois de um pequeno delay, gera o HTML para download
-            setTimeout(() => {
-                // Gera o conteúdo do relatório
-                const reportContent = generateReportContent();
-                
-                // Cria um blob com o conteúdo HTML
-                const blob = new Blob([reportContent], { type: 'text/html;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                
-                // Cria um link para download
-                const a = document.createElement('a');
-                a.href = url;
-                
-                // Nome do arquivo com data e turno
-                const dateObj = new Date(sessionData.date + 'T00:00:00');
-                const day = String(dateObj.getDate()).padStart(2, '0');
-                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const year = dateObj.getFullYear();
-                const fileName = `Relatorio_Turno${sessionData.turn}_${day}${month}${year}_${sessionData.frentistaName.replace(/\s+/g, '_')}.html`;
-                
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                
-                // Limpa
-                setTimeout(() => {
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                }, 100);
-            }, 1000);
+        function isGasProduct(productName) {
+            return productName.toLowerCase().includes('gás') || productName.toLowerCase().includes('gas');
         }
 
-        // Função para gerar o conteúdo do relatório HTML idêntico ao da impressão
+        function generateAndDownloadReport() {
+            saveShiftData().then(() => {
+                // Gera o HTML do relatório
+                const reportHtml = generateReportContent();
+                
+                // Abre em uma nova janela
+                const newWindow = window.open('', '_blank', 'width=800,height=600');
+                if (!newWindow) {
+                    alert('Por favor, permita popups para gerar o relatório.');
+                    return;
+                }
+                
+                newWindow.document.write(reportHtml);
+                newWindow.document.close();
+                
+                // Espera carregar e imprime
+                setTimeout(() => {
+                    newWindow.print();
+                    // Fecha a janela após imprimir ou cancelar
+                    setTimeout(() => {
+                        newWindow.close();
+                    }, 500);
+                }, 500);
+            });
+        }
+
         function generateReportContent() {
             const dateObj = new Date(sessionData.date + 'T00:00:00');
             const day = String(dateObj.getDate()).padStart(2, '0');
             const month = String(dateObj.getMonth() + 1).padStart(2, '0');
             const year = dateObj.getFullYear();
             const formattedDate = `${day}/${month}/${year}`;
-            
-            // Coleta todos os dados da tabela visível (usando os valores atuais dos inputs)
+
             let tableContent = '';
-            let totalVendasCalculado = 0;
-            
-            // Percorre todas as linhas da tabela visível
-            const tableRows = document.querySelectorAll('#table-body tr');
-            
-            tableRows.forEach(row => {
-                // Obtém os valores dos campos da linha
-                const productName = row.querySelector('.product-name').textContent;
-                const initialQtyInput = row.querySelector('.qty-input');
-                const entryQtyInput = row.querySelector('.entry-input');
-                const soldQtyCell = row.querySelector('td:nth-child(5)');
-                const finalStockCell = row.querySelector('td:nth-child(6)');
-                const productValueCell = row.querySelector('td:nth-child(3)');
-                const saleTotalSpan = row.querySelector('.sale-total');
-                
-                const initialQty = initialQtyInput ? (initialQtyInput.value || 0) : 0;
-                const entryQty = entryQtyInput ? (entryQtyInput.value || 0) : 0;
-                const soldQty = soldQtyCell ? soldQtyCell.textContent : 0;
-                const finalStock = finalStockCell ? finalStockCell.textContent : 0;
-                
-                // Extrai o valor numérico da célula de valor (remove "R$ " e substitui "," por ".")
-                let productValue = 0;
-                if (productValueCell) {
-                    const valueText = productValueCell.textContent.trim();
-                    productValue = parseFloat(valueText.replace('R$', '').replace('.', '').replace(',', '.'));
-                }
-                
-                // Calcula o total de vendas para esta linha
-                const soldQtyNum = parseInt(soldQty) || 0;
-                const lineTotal = soldQtyNum * productValue;
-                totalVendasCalculado += lineTotal;
-                
+
+            const allProducts = [...products];
+
+            allProducts.forEach(product => {
+                const productId = product.name.replace(/\s+/g, '_').toLowerCase();
+                const initialQty = initialQuantities[productId] || 0;
+                const entryQty = entryQuantities[productId] || 0;
+                const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
+                const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
+
                 tableContent += `
-                    <tr>
-                        <td class="product-name" style="text-align: left; padding: 3px 2px; font-size: 10px;">${productName}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${initialQty}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(productValue)}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${soldQty}</td>
-                        <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
-                    </tr>
-                `;
-            });
-            
-            // Se não houver linhas (tabela vazia), usa os dados do estado atual
-            if (tableRows.length === 0) {
-                let visibleProducts = products;
-                
-                // Se há termo de busca, filtra como na tabela visível
-                if (currentSearchTerm) {
-                    visibleProducts = products.filter(product => 
-                        product.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
-                    );
-                }
-                
-                visibleProducts.forEach(product => {
-                    const productId = product.name.replace(/\s+/g, '_').toLowerCase();
-                    const initialQty = initialQuantities[productId] || 0;
-                    const entryQty = entryQuantities[productId] || 0;
-                    const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
-                    const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
-                    
-                    // Calcula o total de vendas para esta linha
-                    const lineTotal = saleInfo.quantity * product.value;
-                    totalVendasCalculado += lineTotal;
-                    
-                    tableContent += `
                         <tr>
-                            <td class="product-name" style="text-align: left; padding: 3px 2px; font-size: 10px;">${product.name}</td>
-                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${initialQty}</td>
-                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(product.value)}</td>
-                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
-                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${saleInfo.quantity}</td>
-                            <td class="numeric" style="text-align: center; padding: 3px 2px; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
-                    </tr>
-                `;
-                });
-            }
-            
-            // Gera HTML idêntico ao da impressão
+                            <td style="text-align: left; padding: 4px 6px; border-bottom: 1px solid #ddd; font-size: 10px;">${product.name}</td>
+                            <td style="text-align: center; padding: 4px 6px; border-bottom: 1px solid #ddd; font-size: 10px; font-family: 'Courier New', monospace;">${initialQty}</td>
+                            <td style="text-align: center; padding: 4px 6px; border-bottom: 1px solid #ddd; font-size: 10px; font-family: 'Courier New', monospace;">${formatCurrency(product.value)}</td>
+                            <td style="text-align: center; padding: 4px 6px; border-bottom: 1px solid #ddd; font-size: 10px; font-family: 'Courier New', monospace;">${entryQty}</td>
+                            <td style="text-align: center; padding: 4px 6px; border-bottom: 1px solid #ddd; font-size: 10px; font-family: 'Courier New', monospace;">${saleInfo.quantity}</td>
+                            <td style="text-align: center; padding: 4px 6px; border-bottom: 1px solid #ddd; font-size: 10px; font-family: 'Courier New', monospace;">${finalStock}</td>
+                        </tr>
+                    `;
+            });
+
             return `
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório Turno ${sessionData.turn} - ${formattedDate}</title>
-    <style>
-        @page {
-            margin: 0.5cm;
-        }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Relatório - ${formattedDate}</title>
+        <style>
+            @page { 
+                margin: 0.5cm; 
+                size: A4 portrait; 
+            }
+            * { 
+                margin: 0; 
+                padding: 0; 
+                box-sizing: border-box; 
+                font-family: 'Roboto', Arial, sans-serif; 
+            }
+            body { 
+                background: white; 
+                padding: 10px; 
+                font-size: 11px; 
+            }
+            .report-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #1A355C;
+            }
+            .report-header h2 {
+                color: #1A355C;
+                font-size: 16px;
+            }
+            .report-header .info {
+                text-align: right;
+                font-size: 11px;
+                color: #555;
+            }
+            .report-header .info strong {
+                color: #1A355C;
+            }
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                font-size: 10px; 
+            }
+            thead { 
+                background: #e2e8f0; 
+            }
+            th { 
+                padding: 6px 6px; 
+                text-align: center; 
+                font-weight: 700; 
+                color: #1A355C; 
+                border-bottom: 2px solid #1A355C; 
+                font-size: 9px; 
+            }
+            th:first-child {
+                text-align: left;
+            }
+            td { 
+                padding: 4px 6px; 
+                border-bottom: 0.5px solid #e2e8f0; 
+                font-size: 10px; 
+            }
+            .product-name { 
+                text-align: left; 
+                word-break: break-word; 
+            }
+            .numeric { 
+                text-align: center; 
+                font-family: 'Courier New', monospace; 
+            }
+            .col-produto { width: 30%; }
+            .col-inicial { width: 10%; }
+            .col-valor { width: 10%; }
+            .col-entrada { width: 10%; }
+            .col-vendidos { width: 10%; }
+            .col-estoque { width: 10%; }
+            tbody tr { page-break-inside: avoid; }
+        </style>
+    </head>
+    <body>
+        <div class="report-header">
+            <h2>Posto Picoró - Controle de Lubrificantes</h2>
+            <div class="info">
+                <div><strong>Data:</strong> ${formattedDate}</div>
+                <div><strong>Frentista:</strong> ${sessionData.frentistaName}</div>
+                <div><strong>Turno:</strong> ${sessionData.turn}</div>
+            </div>
+        </div>
         
-        * { 
-            margin: 0 !important; 
-            padding: 0 !important; 
-            box-sizing: border-box !important;
-            font-family: 'Roboto', sans-serif !important;
-        }
-        
-        body { 
-            background: white !important; 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            font-size: 12px !important;
-            width: 100% !important;
-            min-height: 100vh !important;
-        }
-        
-        .container { 
-            width: 100% !important; 
-            height: auto !important; 
-            min-height: auto !important; 
-            max-width: none !important; 
-            max-height: none !important;
-            box-shadow: none !important; 
-            border-radius: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        /* Cabeçalho de impressão */
-        .print-header { 
-            display: flex !important; 
-            justify-content: flex-end !important; 
-            align-items: flex-start !important; 
-            gap: 15px !important; 
-            margin-bottom: 10px !important; 
-            font-size: 10px !important; 
-            padding: 0 8px !important;
-            page-break-inside: avoid !important;
-        }
-        
-        .print-header div { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; 
-            line-height: 1.2 !important; 
-        }
-        
-        .print-header strong { 
-            font-size: 9px !important; 
-            margin-bottom: 2px !important; 
-            color: #1A355C !important;
-        }
-        
-        .print-header span { 
-            font-size: 10px !important; 
-            font-weight: 600 !important;
-        }
-        
-        /* Tabela */
-        table { 
-            width: 100% !important; 
-            border-collapse: collapse !important; 
-            font-size: 10px !important; 
-            margin-top: 0 !important; 
-            page-break-inside: avoid !important;
-        }
-        
-        thead { 
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important; 
-            position: static !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; 
-        }
-        
-        th { 
-            padding: 4px 2px !important; 
-            text-align: center !important; 
-            font-weight: 700 !important; 
-            color: #1A355C !important; 
-            border-bottom: 2px solid #cbd5e1 !important; 
-            font-size: 9px !important; 
-        }
-        
-        td { 
-            padding: 3px 2px !important; 
-            line-height: 1.2 !important; 
-            border-bottom: 0.5px solid #e2e8f0 !important; 
-            font-size: 10px !important;
-        }
-        
-        .product-name {
-            font-size: 10px !important;
-            padding-left: 3px !important;
-            text-align: left !important;
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-produto" style="text-align: left;">PRODUTO</th>
+                    <th class="col-inicial">INICIAL</th>
+                    <th class="col-valor">R$</th>
+                    <th class="col-entrada">ENTRADA</th>
+                    <th class="col-vendidos">VENDIDOS</th>
+                    <th class="col-estoque">ESTOQUE</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableContent}
+            </tbody>
+        </table>
+    </body>
+    </html>
+        `;
         }
 
-        .numeric {
-            text-align: center !important;
-            font-variant-numeric: tabular-nums !important;
-            font-size: 10px !important;
-            font-family: 'Courier New', monospace !important;
-        }
-        
-        /* Área do Total de Vendas */
-        .sales-summary {
-            display: flex !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            padding: 8px 15px !important;
-            background: #FFF176 !important;
-            border-top: 2px solid #FFEB3B !important;
-            margin-top: 10px !important;
-            font-size: 11px !important;
-            margin-bottom: 0 !important;
-            page-break-inside: avoid !important;
-        }
-        
-        .total-vendas { 
-            font-weight: 700 !important; 
-            color: #5D4037 !important;
-            font-size: 11px !important;
-        }
-        
-        .total-value {
-            font-weight: 700 !important;
-            color: #1A355C !important;
-            font-size: 12px !important;
-        }
-        
-        /* Remove qualquer data/hora do navegador */
-        .date-time, .url, .page-title {
-            display: none !important;
-        }
-        
-        /* Layout de colunas igual ao da impressão */
-        .col-produto { width: 42% !important; }
-        .col-inicial { width: 9% !important; }
-        .col-valor { width: 9% !important; }
-        .col-entrada { width: 9% !important; }
-        .col-vendidos { width: 9% !important; }
-        .col-estoque { width: 9% !important; }
-        
-        tbody tr { 
-            page-break-inside: avoid !important; 
-            height: 14px !important; 
-        }
-        
-        .table-container { 
-            overflow: visible !important; 
-            height: auto !important; 
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Cabeçalho de impressão -->
-        <div class="print-header">
-            <div><strong>Data:</strong><span>${formattedDate}</span></div>
-            <div><strong>Frentista:</strong><span>${sessionData.frentistaName}</span></div>
-            <div><strong>Turno:</strong><span>Turno ${sessionData.turn}</span></div>
-        </div>
-        
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-produto" style="text-align: left;">PRODUTO</th>
-                        <th class="col-inicial">QTD INICIAL</th>
-                        <th class="col-valor">VALOR (R$)</th>
-                        <th class="col-entrada">ENTRADA</th>
-                        <th class="col-vendidos">QTD VENDIDA</th>
-                        <th class="col-estoque">ESTOQUE FINAL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${tableContent}
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Área do Total de Vendas -->
-        <div class="sales-summary">
-            <div class="total-vendas">TOTAL DE VENDAS:</div>
-            <div class="total-value">R$ ${formatCurrency(totalVendasCalculado)}</div>
-        </div>
-        
-        <!-- Rodapé simples para o arquivo baixado -->
-        <div style="text-align: center; margin-top: 20px; font-size: 9px; color: #666; padding: 10px;">
-            Sistema de Controle - Posto Picoró<br>
-            Relatório gerado em ${new Date().toLocaleString('pt-BR')}
-        </div>
-    </div>
-</body>
-</html>
-    `;
-        }
-
-        // Sistema de autenticação
         function toggleAuthForms() {
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
             const toggleBtn = document.getElementById('toggle-auth');
-            
+
             if (loginForm.style.display === 'none') {
                 loginForm.style.display = 'block';
                 registerForm.style.display = 'none';
@@ -1696,18 +1431,14 @@
 
         async function registerUser(name, code) {
             try {
-                // Verifica se o código já existe
                 const existingUser = await getItem(STORE_USERS, code);
                 if (existingUser) {
                     alert('Este código de acesso já está em uso. Por favor, escolha outro.');
                     return false;
                 }
-                
-                // Adiciona o novo usuário
                 const newUser = { name, code };
                 await addItem(STORE_USERS, newUser);
                 users.push(newUser);
-                
                 alert('Cadastro realizado com sucesso! Agora faça login com seu código.');
                 toggleAuthForms();
                 return true;
@@ -1735,70 +1466,15 @@
             }
         }
 
-        // Função para autenticar administrador
-        function authenticateAdmin(code) {
-            const admin = adminUsers.find(admin => admin.code === code);
-            if (admin) {
-                isEditSessionActive = true;
-                return true;
-            } else {
-                alert('Código de administrador inválido. Tente novamente.');
-                return false;
-            }
-        }
-
-        // Função para verificar se precisa autenticar como admin
-        function checkAdminAccess() {
-            // Se já está em uma sessão de edição, não precisa autenticar novamente
-            if (isEditSessionActive) {
-                return Promise.resolve(true);
-            }
-            
-            document.getElementById('admin-auth-modal').style.display = 'flex';
-            document.getElementById('admin-code').focus();
-            document.getElementById('admin-code').value = '';
-            return new Promise((resolve) => {
-                const adminForm = document.getElementById('admin-auth-form');
-                const handleSubmit = (e) => {
-                    e.preventDefault();
-                    const code = document.getElementById('admin-code').value;
-                    if (code.length < 4) {
-                        alert('O código de administrador deve ter pelo menos 4 dígitos.');
-                        return;
-                    }
-                    if (authenticateAdmin(code)) {
-                        document.getElementById('admin-auth-modal').style.display = 'none';
-                        adminForm.removeEventListener('submit', handleSubmit);
-                        resolve(true);
-                    }
-                };
-                adminForm.addEventListener('submit', handleSubmit);
-                
-                // Cancelar autenticação
-                const cancelAuth = () => {
-                    document.getElementById('admin-auth-modal').style.display = 'none';
-                    adminForm.removeEventListener('submit', handleSubmit);
-                    resolve(false);
-                };
-                
-                document.getElementById('close-admin-modal').addEventListener('click', cancelAuth);
-                document.getElementById('cancel-admin').addEventListener('click', cancelAuth);
-            });
-        }
-
-        // Função para selecionar o turno
         function selecionarTurno(turno) {
             document.querySelectorAll('.turn-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
             const btnSelecionado = document.querySelector(`.turn-btn[data-turn="${turno}"]`);
             btnSelecionado.classList.add('active');
-            
             document.getElementById('session-turn').value = turno;
         }
 
-        // Função para verificar se há turno ativo para o usuário
         async function checkActiveShift(userCode) {
             try {
                 const activeShift = await getItem(STORE_ACTIVE_SHIFTS, userCode);
@@ -1809,7 +1485,6 @@
             }
         }
 
-        // Função para salvar turno ativo
         async function saveActiveShift(shiftData) {
             try {
                 await updateItem(STORE_ACTIVE_SHIFTS, shiftData);
@@ -1818,7 +1493,6 @@
             }
         }
 
-        // Função para remover turno ativo
         async function removeActiveShift(userCode) {
             try {
                 await deleteItem(STORE_ACTIVE_SHIFTS, userCode);
@@ -1829,7 +1503,6 @@
             }
         }
 
-        // Função para salvar dados do turno - CORRIGIDO
         async function saveShiftData() {
             try {
                 const shiftData = {
@@ -1843,14 +1516,11 @@
                     salesData: { ...salesData },
                     timestamp: new Date().getTime()
                 };
-                
                 await updateItem(STORE_SHIFTS, shiftData);
                 await saveActiveShift({
                     userCode: currentUser.code,
                     shiftId: currentShiftId
                 });
-                
-                console.log('Turno salvo com sucesso');
                 return true;
             } catch (error) {
                 console.error('Erro ao salvar dados do turno:', error);
@@ -1858,7 +1528,6 @@
             }
         }
 
-        // Função para carregar dados do turno
         async function loadShiftData(shiftId) {
             try {
                 const shiftData = await getItem(STORE_SHIFTS, shiftId);
@@ -1866,7 +1535,6 @@
                     initialQuantities = { ...shiftData.initialQuantities };
                     entryQuantities = { ...shiftData.entryQuantities };
                     salesData = { ...shiftData.salesData };
-                    console.log('Dados do turno carregados:', shiftData);
                     return true;
                 }
                 return false;
@@ -1876,52 +1544,38 @@
             }
         }
 
-        // MODIFICAÇÃO: Inicialização do sistema principal com foco automático
         async function initializeSystem(date, turn, shiftId = null) {
-            sessionData = { 
-                frentistaName: currentUser.name, 
-                date: date, 
-                turn: turn 
+            sessionData = {
+                frentistaName: currentUser.name,
+                date: date,
+                turn: turn
             };
-            
-            // Formata a data corretamente
-            const dateObj = new Date(date + 'T00:00:00'); // Garante o fuso horário correto
+
+            const dateObj = new Date(date + 'T00:00:00');
             const day = String(dateObj.getDate()).padStart(2, '0');
             const month = String(dateObj.getMonth() + 1).padStart(2, '0');
             const year = dateObj.getFullYear();
-            
             const formattedDate = `${day}/${month}/${year}`;
-            
+
             document.getElementById('current-date').textContent = formattedDate;
             document.getElementById('frentista-display').textContent = currentUser.name;
             document.getElementById('turn-display').textContent = `Turno ${turn}`;
-            
-            // Atualiza também o cabeçalho de impressão
-            document.getElementById('print-date').textContent = formattedDate;
-            document.getElementById('print-frentista').textContent = currentUser.name;
-            document.getElementById('print-turno').textContent = `Turno ${turn}`;
-            
+
             document.getElementById('initial-container').style.display = 'none';
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('main-container').style.display = 'flex';
             document.getElementById('turn-modal').style.display = 'none';
-            
-            // Se é um novo turno, cria um ID único
+
             if (isNewShift) {
                 currentShiftId = Date.now();
-                
-                // Salva o turno inicial
                 await saveShiftData();
             } else {
                 currentShiftId = shiftId;
-                
-                // Carrega os dados do turno
                 await loadShiftData(shiftId);
             }
-            
+
             renderTable();
-            
-            // MODIFICAÇÃO: Focar no primeiro campo de quantidade inicial após um pequeno delay
+
             setTimeout(() => {
                 const firstInput = document.querySelector('.qty-input');
                 if (firstInput) {
@@ -1929,14 +1583,12 @@
                     firstInput.select();
                 }
             }, 100);
-            
-            // Salva automaticamente a cada 30 segundos
+
             setInterval(async () => {
                 await saveShiftData();
             }, 30000);
         }
 
-        // Função para limpar busca
         function clearSearch() {
             document.getElementById('search').value = '';
             currentSearchTerm = '';
@@ -1944,277 +1596,117 @@
             renderTable();
         }
 
-        // Função para ordenar produtos
-        function sortProducts(productsToSort, sortType) {
-            const sorted = [...productsToSort];
-            switch(sortType) {
-                case 'name':
-                    return sorted.sort((a, b) => a.name.localeCompare(b.name));
-                case 'value':
-                    return sorted.sort((a, b) => a.value - b.value);
-                default:
-                    return sorted;
-            }
-        }
-
-        // Função para aplicar busca nos produtos de edição
-        function filterEditProducts() {
-            let filtered = products;
-            
-            if (editSearchTerm) {
-                filtered = filtered.filter(product => 
-                    product.name.toLowerCase().includes(editSearchTerm.toLowerCase())
-                );
-            }
-            
-            return sortProducts(filtered, currentSort);
-        }
-
-        // Restante do código do sistema (renderTable, calculateTotalSales, etc.)
         function calculateTotalSales() {
             let total = 0;
+            
             Object.values(salesData).forEach(sale => {
                 if (sale && sale.quantity > 0) {
                     const product = products.find(p => p.name === sale.productName);
-                    if (product) total += sale.quantity * product.value;
+                    if (product && !isGasProduct(product.name)) {
+                        total += sale.quantity * product.value;
+                    }
                 }
             });
+            
             document.getElementById('total-sales').textContent = `R$ ${formatCurrency(total)}`;
             return total;
         }
 
-        // MODIFICAÇÃO: Função renderTable atualizada com as novas funcionalidades
         function renderTable(filteredProducts = products) {
             const tableBody = document.getElementById('table-body');
             tableBody.innerHTML = '';
-            
-            // Se há termo de busca, filtra os produtos
+
             if (currentSearchTerm) {
-                filteredProducts = products.filter(product => 
+                filteredProducts = products.filter(product =>
                     product.name.toLowerCase().includes(currentSearchTerm.toLowerCase())
                 );
             }
-            
-            filteredProducts.forEach((product, index) => {
+
+            filteredProducts.forEach((product) => {
                 const productId = product.name.replace(/\s+/g, '_').toLowerCase();
                 const initialQty = initialQuantities[productId] || '';
                 const entryQty = entryQuantities[productId] || '';
                 const saleInfo = salesData[productId] || { quantity: 0, productName: product.name };
                 const saleTotal = saleInfo.quantity * product.value;
                 const finalStock = calculateFinalStock(initialQty, entryQty, saleInfo.quantity);
-                
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="product-name">${product.name}</td>
-                    <td class="numeric"><input type="number" class="qty-input" data-product="${productId}" value="${initialQty}" placeholder="0" min="0" data-row="${index}"></td>
-                    <td class="numeric">${formatCurrency(product.value)}</td>
-                    <td class="numeric"><input type="number" class="entry-input" data-product="${productId}" value="${entryQty}" placeholder="0" min="0" data-row="${index}"></td>
-                    <td class="numeric">${saleInfo.quantity}</td>
-                    <td class="numeric">${finalStock}</td>
-                    <td class="numeric">
-                        <div class="sale-controls">
-                            <button class="sale-btn sale-minus" data-product="${productId}" data-action="decrease">-</button>
-                            <span class="sale-qty">${saleInfo.quantity}</span>
-                            <button class="sale-btn sale-plus" data-product="${productId}" data-action="increase">+</button>
-                            <span class="sale-total">R$ ${formatCurrency(saleTotal)}</span>
-                        </div>
-                    </td>
-                `;
+                        <td class="product-name" title="${product.name}">${product.name}</td>
+                        <td class="numeric"><input type="number" class="qty-input" data-product="${productId}" value="${initialQty}" placeholder="0" min="0"></td>
+                        <td class="numeric">${formatCurrency(product.value)}</td>
+                        <td class="numeric"><input type="number" class="entry-input" data-product="${productId}" value="${entryQty}" placeholder="0" min="0"></td>
+                        <td class="numeric">${saleInfo.quantity}</td>
+                        <td class="numeric">${finalStock}</td>
+                        <td class="numeric">
+                            <div class="sale-controls">
+                                <button class="sale-btn sale-minus" data-product="${productId}" data-action="decrease">-</button>
+                                <span class="sale-qty">${saleInfo.quantity}</span>
+                                <button class="sale-btn sale-plus" data-product="${productId}" data-action="increase">+</button>
+                                <span class="sale-total">R$ ${formatCurrency(saleTotal)}</span>
+                            </div>
+                        </td>
+                    `;
                 tableBody.appendChild(row);
             });
-            
-            // Adicionar event listeners para os inputs
+
             document.querySelectorAll('.qty-input, .entry-input').forEach(input => {
                 input.addEventListener('change', function() {
                     const productId = this.getAttribute('data-product');
                     const value = this.value ? parseInt(this.value) : '';
-                    
+
                     if (this.classList.contains('qty-input')) {
                         initialQuantities[productId] = value;
                     } else {
                         entryQuantities[productId] = value;
                     }
-                    
-                    // MODIFICAÇÃO: Atualiza o estoque final automaticamente
+
                     updateFinalStock(productId);
-                    
-                    // Salva automaticamente e recalcula totais
                     saveShiftData();
                     calculateTotalSales();
                 });
-                
-                // MODIFICAÇÃO: Navegação com Tab
                 input.addEventListener('keydown', handleTabNavigation);
             });
-            
+
             document.querySelectorAll('.sale-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const productId = this.getAttribute('data-product');
                     const action = this.getAttribute('data-action');
-                    const product = products.find(p => p.name.replace(/\s+/g, '_').toLowerCase() === productId);
+                    const product = products.find(p => p.name.replace(/\s+/g, '_').toLowerCase() ===
+                    productId);
                     if (!product) return;
-                    
-                    if (!salesData[productId]) salesData[productId] = { quantity: 0, productName: product.name };
+
+                    if (!salesData[productId]) salesData[productId] = { quantity: 0,
+                        productName: product.name };
                     if (action === 'increase') salesData[productId].quantity += 1;
-                    else if (action === 'decrease' && salesData[productId].quantity > 0) salesData[productId].quantity -= 1;
-                    
-                    // MODIFICAÇÃO: Atualiza o estoque final
+                    else if (action === 'decrease' && salesData[productId].quantity > 0) salesData[
+                        productId].quantity -= 1;
+
                     updateFinalStock(productId);
-                    
-                    // Salva automaticamente e atualiza a tabela
                     saveShiftData();
                     calculateTotalSales();
-                    
-                    // Atualiza apenas a linha afetada para melhor performance
+
                     const row = this.closest('tr');
                     if (row) {
                         const saleQtyElement = row.querySelector('.sale-qty');
                         const saleTotalElement = row.querySelector('.sale-total');
                         const saleTotal = salesData[productId].quantity * product.value;
-                        
                         if (saleQtyElement) saleQtyElement.textContent = salesData[productId].quantity;
                         if (saleTotalElement) saleTotalElement.textContent = `R$ ${formatCurrency(saleTotal)}`;
-                        
-                        // Atualiza também a coluna de quantidade vendida
                         const soldQtyCell = row.querySelector('td:nth-child(5)');
                         if (soldQtyCell) soldQtyCell.textContent = salesData[productId].quantity;
-                        
-                        // Atualiza estoque final
                         const finalStockCell = row.querySelector('td:nth-child(6)');
                         if (finalStockCell) {
                             const initialQty = initialQuantities[productId] || 0;
                             const entryQty = entryQuantities[productId] || 0;
-                            finalStockCell.textContent = calculateFinalStock(initialQty, entryQty, salesData[productId].quantity);
+                            finalStockCell.textContent = calculateFinalStock(initialQty, entryQty,
+                                salesData[productId].quantity);
                         }
                     }
                 });
             });
-            
+
             calculateTotalSales();
-        }
-
-        async function openProductModal(index = -1) {
-            currentEditingIndex = index;
-            document.getElementById('modal-title').textContent = index === -1 ? 'Adicionar Lubrificante' : 'Editar Lubrificante';
-            if (index !== -1) {
-                const product = products[index];
-                document.getElementById('product-name').value = product.name;
-                document.getElementById('product-value').value = product.value;
-            } else {
-                document.getElementById('product-form').reset();
-            }
-            document.getElementById('product-modal').style.display = 'flex';
-            document.getElementById('product-name').focus();
-        }
-
-        document.getElementById('product-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const product = {
-                name: document.getElementById('product-name').value,
-                value: parseFloat(document.getElementById('product-value').value)
-            };
-            
-            if (currentEditingIndex === -1) {
-                products.push(product);
-                try {
-                    await addItem(STORE_PRODUCTS, product);
-                } catch (error) {
-                    console.error('Erro ao adicionar produto:', error);
-                }
-            } else {
-                products[currentEditingIndex] = product;
-                // Para atualizar, precisamos primeiro obter o ID do produto existente
-                try {
-                    const allProducts = await getAllItems(STORE_PRODUCTS);
-                    const existingProduct = allProducts.find(p => p.name === product.name);
-                    if (existingProduct) {
-                        await updateItem(STORE_PRODUCTS, { ...existingProduct, ...product });
-                    } else {
-                        await addItem(STORE_PRODUCTS, product);
-                    }
-                } catch (error) {
-                    console.error('Erro ao atualizar produto:', error);
-                }
-            }
-            
-            document.getElementById('product-modal').style.display = 'none';
-            renderEditTable();
-            renderTable();
-        });
-
-        function renderEditTable() {
-            const editTableBody = document.getElementById('edit-table-body');
-            editTableBody.innerHTML = '';
-            
-            const filteredProducts = filterEditProducts();
-            
-            filteredProducts.forEach((product, index) => {
-                const originalIndex = products.findIndex(p => p.name === product.name);
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${product.name}</td>
-                    <td class="numeric">${formatCurrency(product.value)}</td>
-                    <td>
-                        <button class="btn-edit edit-product-btn" data-index="${originalIndex}">Editar</button>
-                        <button class="btn-remove remove-product-btn" data-index="${originalIndex}">Remover</button>
-                    </td>
-                `;
-                editTableBody.appendChild(row);
-            });
-            
-            document.querySelectorAll('.edit-product-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const index = parseInt(e.target.getAttribute('data-index'));
-                    openProductModal(index);
-                });
-            });
-            
-            document.querySelectorAll('.remove-product-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const index = parseInt(e.target.getAttribute('data-index'));
-                    if (confirm(`Tem certeza que deseja remover "${products[index].name}"?`)) {
-                        try {
-                            // Para remover do banco, precisamos primeiro obter o ID do produto
-                            const allProducts = await getAllItems(STORE_PRODUCTS);
-                            const productToDelete = allProducts.find(p => p.name === products[index].name);
-                            if (productToDelete) {
-                                await deleteItem(STORE_PRODUCTS, productToDelete.id);
-                            }
-                            products.splice(index, 1);
-                            renderEditTable();
-                            renderTable();
-                        } catch (error) {
-                            console.error('Erro ao remover produto:', error);
-                        }
-                    }
-                });
-            });
-        }
-
-        async function openEditModal() {
-            // Verifica se o usuário está autenticado como admin
-            const isAuthenticated = await checkAdminAccess();
-            if (!isAuthenticated) return;
-            
-            // Reseta estado de busca e ordenação
-            editSearchTerm = '';
-            document.getElementById('edit-search').value = '';
-            currentSort = 'name';
-            
-            // Ativa botão de ordenação padrão
-            document.querySelectorAll('.sort-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector('.sort-btn[data-sort="name"]').classList.add('active');
-            
-            renderEditTable();
-            document.getElementById('edit-modal').style.display = 'flex';
-        }
-
-        // Função para finalizar sessão de edição
-        function endEditSession() {
-            isEditSessionActive = false;
-            document.getElementById('edit-modal').style.display = 'none';
         }
 
         // Event Listeners
@@ -2237,17 +1729,15 @@
             event.preventDefault();
             const name = document.getElementById('register-name').value;
             const code = document.getElementById('register-code').value;
-            
+
             if (name.trim() === '') {
                 alert('Por favor, informe seu nome.');
                 return;
             }
-            
             if (code.length < 4) {
                 alert('O código de acesso deve ter pelo menos 4 dígitos.');
                 return;
             }
-            
             await registerUser(name, code);
         });
 
@@ -2255,12 +1745,11 @@
             event.preventDefault();
             const date = document.getElementById('session-date').value;
             const turn = document.getElementById('session-turn').value;
-            
+
             if (!date || !turn) {
                 alert('Por favor, selecione a data e o turno.');
                 return;
             }
-            
             await initializeSystem(date, turn);
         });
 
@@ -2275,7 +1764,6 @@
             document.getElementById('turn-modal').style.display = 'none';
         });
 
-        // Botões de seleção de turno na tela inicial
         document.getElementById('new-shift-btn').addEventListener('click', function() {
             isNewShift = true;
             document.getElementById('initial-container').style.display = 'none';
@@ -2290,21 +1778,18 @@
         document.getElementById('continue-shift-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const code = document.getElementById('continue-code').value;
-            
+
             if (code.length < 4) {
                 alert('O código de acesso deve ter pelo menos 4 dígitos.');
                 return;
             }
-            
+
             const success = await loginUser(code);
             if (success) {
-                // Verifica se há turno ativo para este usuário
                 const activeShift = await checkActiveShift(code);
                 if (activeShift) {
                     isNewShift = false;
                     document.getElementById('continue-shift-modal').style.display = 'none';
-                    
-                    // Carrega os dados do turno
                     const shiftData = await getItem(STORE_SHIFTS, activeShift.shiftId);
                     if (shiftData) {
                         await initializeSystem(shiftData.date, shiftData.turn, activeShift.shiftId);
@@ -2328,7 +1813,6 @@
             document.getElementById('continue-shift-modal').style.display = 'none';
         });
 
-        // Busca de produtos melhorada
         document.getElementById('search').addEventListener('input', function() {
             currentSearchTerm = this.value;
             if (currentSearchTerm) {
@@ -2339,117 +1823,57 @@
             renderTable();
         });
 
-        // Busca na edição de produtos
-        document.getElementById('edit-search').addEventListener('input', function() {
-            editSearchTerm = this.value;
-            renderEditTable();
-        });
-
-        // Ordenação na edição de produtos
-        document.querySelectorAll('.sort-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const sortType = this.getAttribute('data-sort');
-                currentSort = sortType;
-                
-                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                renderEditTable();
-            });
-        });
-
         document.getElementById('clear-search').addEventListener('click', clearSearch);
 
-        // MODIFICAÇÃO AQUI: Agora ao fechar turno, gera relatório, remove turno ativo e zera dados
         document.getElementById('close-shift').addEventListener('click', async () => {
-            if (confirm('ATENÇÃO: Ao fechar o turno, todas as informações serão zeradas e não será possível continuar este turno. Deseja realmente fechar o turno e gerar o relatório?')) {
-                // Gera relatório
+            if (confirm(
+                    'ATENÇÃO: Ao fechar o turno, todas as informações serão zeradas e não será possível continuar este turno. Deseja realmente fechar o turno e gerar o relatório?'
+                    )) {
                 generateAndDownloadReport();
-                
-                // Remove turno ativo
                 await removeActiveShift(currentUser.code);
-                
-                // Zera dados locais
                 initialQuantities = {};
                 entryQuantities = {};
                 salesData = {};
                 currentShiftId = null;
-                
-                // Volta para tela inicial
                 document.getElementById('main-container').style.display = 'none';
                 document.getElementById('initial-container').style.display = 'flex';
-                
                 alert('Turno fechado com sucesso! Todas as informações foram zeradas.');
             }
         });
 
-        // Event Listeners para modais
-        document.getElementById('edit-products').addEventListener('click', openEditModal);
-        document.getElementById('close-modal').addEventListener('click', () => document.getElementById('product-modal').style.display = 'none');
-        document.getElementById('close-edit-modal').addEventListener('click', endEditSession);
-        document.getElementById('cancel-form').addEventListener('click', () => document.getElementById('product-modal').style.display = 'none');
-        document.getElementById('cancel-edit').addEventListener('click', endEditSession);
-        document.getElementById('add-new-product').addEventListener('click', () => {
-            openProductModal();
-        });
-
         window.addEventListener('click', (event) => {
-            if (event.target === document.getElementById('product-modal')) document.getElementById('product-modal').style.display = 'none';
-            if (event.target === document.getElementById('edit-modal')) {
-                endEditSession();
-            }
-            if (event.target === document.getElementById('turn-modal')) document.getElementById('turn-modal').style.display = 'none';
-            if (event.target === document.getElementById('admin-auth-modal')) document.getElementById('admin-auth-modal').style.display = 'none';
-            if (event.target === document.getElementById('continue-shift-modal')) document.getElementById('continue-shift-modal').style.display = 'none';
+            if (event.target === document.getElementById('turn-modal')) document.getElementById('turn-modal').style
+                .display = 'none';
+            if (event.target === document.getElementById('continue-shift-modal')) document.getElementById(
+                    'continue-shift-modal').style.display = 'none';
         });
 
-        // Inicialização - CORRIGIDO
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 console.log('Iniciando sistema...');
-                
-                // Define a data atual do Brasil como padrão
                 const dataBrasil = getBrazilianDate();
                 document.getElementById('session-date').value = dataBrasil;
                 document.getElementById('session-date').min = dataBrasil;
                 document.getElementById('session-date').max = dataBrasil;
-                
-                // Inicializa o banco de dados
                 await initDatabase();
-                
-                // Carrega dados iniciais
                 await loadInitialData();
-                
-                // Inicializa variáveis
                 initialQuantities = {};
                 entryQuantities = {};
                 salesData = {};
                 sessionData = {};
-                
                 console.log('Sistema inicializado com sucesso!');
-                console.log('Produtos carregados:', products.length);
-                console.log('Usuários carregados:', users.length);
-                
-                // Mostra tela inicial
                 document.getElementById('initial-container').style.display = 'flex';
-                
             } catch (error) {
                 console.error('Erro crítico na inicialização:', error);
-                
-                // Tenta uma abordagem mais simples em caso de erro
-                alert('Inicializando em modo de segurança devido a um erro no banco de dados. Algumas funcionalidades podem estar limitadas.');
-                
-                // Usa dados locais diretamente
+                alert(
+                    'Inicializando em modo de segurança devido a um erro no banco de dados. Algumas funcionalidades podem estar limitadas.'
+                    );
                 products = [...initialProducts];
                 users = [...adminUsers];
-                
-                // Define a data atual do Brasil como padrão
                 const dataBrasil = getBrazilianDate();
                 document.getElementById('session-date').value = dataBrasil;
                 document.getElementById('session-date').min = dataBrasil;
                 document.getElementById('session-date').max = dataBrasil;
-                
-                // Mostra tela inicial
                 document.getElementById('initial-container').style.display = 'flex';
             }
         });
